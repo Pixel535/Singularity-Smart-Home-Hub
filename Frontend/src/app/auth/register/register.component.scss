@@ -1,0 +1,65 @@
+@use '../../shared/variables.scss' as v;
+@use '../../shared/form-style.scss' as *;
+
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: v.$background-color;
+    padding: 2rem;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 1rem;
+  
+    .field {
+      flex: 1;
+      margin-bottom: 1rem;
+    }
+  
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
+  .form-card {
+    max-width: 700px;
+    width: 100%;
+    padding: 2rem;
+
+    .form-header {
+        margin-bottom: 1rem;
+
+        .image {
+            width: 200px;
+            margin-bottom: 1rem;
+          }
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    input {
+      width: 100%;
+      height: 50%;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      background-color: v.$card-color;
+      border: 1px solid v.$input-border-color;
+      color: v.$text-color-darker;
+  
+      &:focus {
+        outline: none;
+        border-color: v.$secondary-color;
+      }
+    }
+  }
+
+  .form-button {
+    padding: 0.65rem 1.25rem;
+    font-size: 1rem;
+  }

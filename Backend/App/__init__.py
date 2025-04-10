@@ -9,7 +9,12 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    CORS(app)
+    CORS(app,
+         origins=[Config.FRONTEND_ORIGIN],
+         supports_credentials=True,
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         allow_headers=["Content-Type", "Authorization"])
+
     jwt.init_app(app)
 
     from Backend.App.Auth.Routes.auth_routes import auth_route

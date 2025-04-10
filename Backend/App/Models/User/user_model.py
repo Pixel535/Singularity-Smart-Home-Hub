@@ -4,13 +4,22 @@ from Backend.App import Config
 supabase = create_client(Config.SUPABASE_URL, Config.SUPABASE_KEY)
 
 def get_user_by_login(login):
-    return supabase.table("User").select("*").eq("UserLogin", login).single().execute()
+    try:
+        return supabase.table("User").select("*").eq("UserLogin", login).single().execute()
+    except Exception:
+        return type("Response", (object,), {"data": None})()
 
 def get_user_by_mail(mail):
-    return supabase.table("User").select("*").eq("Mail", mail).single().execute()
+    try:
+        return supabase.table("User").select("*").eq("Mail", mail).single().execute()
+    except Exception:
+        return type("Response", (object,), {"data": None})()
 
 def get_user_by_phone(phone):
-    return supabase.table("User").select("*").eq("TelephoneNumber", phone).single().execute()
+    try:
+        return supabase.table("User").select("*").eq("TelephoneNumber", phone).single().execute()
+    except Exception:
+        return type("Response", (object,), {"data": None})()
 
 def create_user(user_data):
     return supabase.table("User").insert(user_data).execute()

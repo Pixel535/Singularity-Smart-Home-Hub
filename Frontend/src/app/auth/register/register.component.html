@@ -1,0 +1,121 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="register-container">
+  <p-card class="form-card">
+    <div class="form-header">
+      <img src="/assets/images/logo1_white.png" alt="Logo" class="image" />
+      <p class="subtitle">Register to continue</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="field-row">
+        <div class="field">
+          <label for="UserLogin">Login</label>
+          <input id="UserLogin" type="text" pInputText formControlName="UserLogin" [class.invalid]="form.get('UserLogin')?.invalid && form.get('UserLogin')?.touched"/>
+          <small *ngIf="form.get('UserLogin')?.invalid && form.get('UserLogin')?.touched" class="error-message">
+            This field is required
+          </small>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field password-field">
+          <label for="Password">Password</label>
+          <div class="input-icon-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="Password"
+              pInputText
+              formControlName="Password"
+              [class.invalid]="form.get('Password')?.invalid && form.get('Password')?.touched"
+            />
+            <i
+              class="pi"
+              [ngClass]="showPassword ? 'pi-eye' : 'pi-eye-slash'"
+              (click)="showPassword = !showPassword"
+            ></i>
+          </div>
+          <small *ngIf="form.get('Password')?.errors && form.get('Password')?.touched" class="error-message">
+            <ng-container *ngIf="form.get('Password')?.errors?.['required']">
+              This field is required
+            </ng-container>
+            <ng-container *ngIf="form.get('Password')?.errors?.['minlength']">
+              Password must be at least 6 characters
+            </ng-container>
+          </small>
+        </div>
+      
+        <div class="field password-field">
+          <label for="ConfirmPassword">Confirm Password</label>
+          <div class="input-icon-wrapper">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              id="ConfirmPassword"
+              pInputText
+              formControlName="ConfirmPassword"
+              [class.invalid]="form.hasError('passwordMismatch') && form.get('ConfirmPassword')?.touched"
+            />
+            <i
+              class="pi"
+              [ngClass]="showConfirmPassword ? 'pi-eye' : 'pi-eye-slash'"
+              (click)="showConfirmPassword = !showConfirmPassword"
+            ></i>
+          </div>
+          <small *ngIf="form.get('ConfirmPassword')?.invalid && form.get('ConfirmPassword')?.touched" class="error-message">
+            This field is required
+          </small>
+          <small *ngIf="form.hasError('passwordMismatch') && form.get('ConfirmPassword')?.touched" class="error-message">
+            Passwords do not match
+          </small>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="Mail">E-mail</label>
+          <input id="Mail" type="email" pInputText formControlName="Mail" [class.invalid]="form.get('Mail')?.invalid && form.get('Mail')?.touched"/>
+          <small *ngIf="form.get('Mail')?.invalid && form.get('Mail')?.touched" class="error-message">
+            A valid email is required
+          </small>
+        </div>
+  
+        <div class="field">
+          <label for="TelephoneNumber">Phone Number</label>
+          <input id="TelephoneNumber" type="text" pInputText formControlName="TelephoneNumber" [class.invalid]="form.get('TelephoneNumber')?.invalid && form.get('TelephoneNumber')?.touched"/>
+          <small *ngIf="form.get('TelephoneNumber')?.invalid && form.get('TelephoneNumber')?.touched" class="error-message">
+            This field is required
+          </small>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="Name">Name</label>
+          <input id="Name" type="text" pInputText formControlName="Name" />
+        </div>
+      
+        <div class="field">
+          <label for="Surname">Surname</label>
+          <input id="Surname" type="text" pInputText formControlName="Surname" />
+        </div>
+      </div>
+
+      <button 
+        pButton 
+        type="submit" 
+        class="form-button"  
+        [disabled]="form.invalid"
+      >
+        <span class="p-button-label">Register</span>
+        <i *ngIf="loading" class="pi pi-spinner pi-spin custom-spinner"></i>
+      </button>
+
+    </form>
+
+    <div class="form-footer">
+      <span>Already have an account?</span>
+      <a routerLink="/login">Log in</a>
+    </div>
+
+  </p-card>
+</div>

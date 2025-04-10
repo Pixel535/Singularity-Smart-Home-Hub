@@ -1,0 +1,11 @@
+@use '../../shared/variables.scss' as v;
+@use '../../shared/form-style.scss' as *;
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: v.$background-color;
+  padding: 2rem;
+}

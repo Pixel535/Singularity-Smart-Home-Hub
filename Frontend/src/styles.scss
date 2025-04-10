@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+
+$background-color: #0f0f0f;
+$text-color: #ffffff;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-family: 'Poppins';
+    scroll-behavior: smooth;
+    color: $text-color;
+}
+
+body {
+    height: 100%;
+    background-color: $background-color;
+}

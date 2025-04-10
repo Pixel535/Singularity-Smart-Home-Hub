@@ -7,14 +7,17 @@ from Backend.App.Models.User.user_model import get_user_by_login, get_user_by_ma
 def register_user(data):
     if get_user_by_login(data["UserLogin"]).data:
         return {"msg": "Login already exists"}, 409
-    if get_user_by_mail(data["mail"]).data:
+    if get_user_by_mail(data["Mail"]).data:
         return {"msg": "Email already in use"}, 409
     if get_user_by_phone(data["TelephoneNumber"]).data:
         return {"msg": "Phone number already in use"}, 409
 
     data["Password"] = generate_password_hash(data["Password"])
-    create_user(data)
-    return {"msg": "User created"}, 201
+    try:
+        create_user(data)
+        return {"msg": "User created"}, 201
+    except Exception:
+        return {"msg": "Error occured during Registering"}, 401
 
 def login_user(identifier, password):
     user = get_user_by_login(identifier)

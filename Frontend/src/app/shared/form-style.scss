@@ -1,0 +1,131 @@
+@use './variables.scss' as v;
+
+.form-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem;
+  background-color: v.$primary-color !important;
+  border: 2px solid v.$secondary-color;
+  border-radius: 2rem;
+  box-shadow: 0 0 24px v.$shadow-color;
+
+  .form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .image {
+      width: 250px;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      color: v.$text-color;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    .subtitle {
+      color: v.$text-color-darker;
+      font-size: 0.95rem;
+    }
+  }
+
+  .field {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: v.$label-text-color;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      background-color: v.$card-color;
+      border: 1px solid v.$input-border-color;
+      color: v.$text-color-darker;
+
+      &:focus {
+        outline: none;
+        border-color: v.$secondary-color;
+      }
+    }
+  }
+
+  .form-button {
+    width: 100%;
+    background-color: v.$secondary-color;
+    color: v.$text-color;
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+
+    &:hover {
+      background-color: v.$hover-secondary-color;
+    }
+
+    .custom-spinner {
+      margin-left: 0.75rem;
+      font-size: 1.2rem;
+      color: #fff;
+    }
+  }
+
+  .form-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: v.$text-color-darker;
+
+    a {
+      margin-left: 0.3rem;
+      color: v.$secondary-color;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.field input.invalid {
+  border-color: #e53935 !important;
+}
+
+.error-message {
+  color: #e53935;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.password-field {
+  .input-icon-wrapper {
+    position: relative;
+
+    input {
+      padding-right: 2.5rem;
+    }
+
+    i {
+      position: absolute;
+      top: 50%;
+      right: 0.75rem;
+      transform: translateY(-50%);
+      color: #aaa;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    i:hover {
+      color: #fff;
+    }
+  }
+}

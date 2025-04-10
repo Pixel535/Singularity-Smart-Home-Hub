@@ -1,0 +1,66 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="login-container">
+  <p-card class="form-card">
+    <div class="form-header">
+      <img src="/assets/images/logo1_white.png" alt="Logo" class="image" />
+      <p class="subtitle">Sign in to continue</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label for="UserLogin">Login or E-mail</label>
+        <input
+          id="UserLogin"
+          type="text"
+          placeholder="Login or Email address"
+          pInputText
+          formControlName="UserLogin"
+          [class.invalid]="form.get('UserLogin')?.invalid && form.get('UserLogin')?.touched"
+        />
+        <small *ngIf="form.get('UserLogin')?.invalid && form.get('UserLogin')?.touched" class="error-message">
+          This field is required
+        </small>
+      </div>
+
+      <div class="field password-field">
+        <label for="Password">Password</label>
+          <div class="input-icon-wrapper">
+            <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="Password"
+            type="password"
+            placeholder="Password"
+            pInputText
+            formControlName="Password"
+            [class.invalid]="form.get('Password')?.invalid && form.get('Password')?.touched"
+          />
+          <i
+            class="pi"
+            [ngClass]="showPassword ? 'pi-eye' : 'pi-eye-slash'"
+            (click)="showPassword = !showPassword"
+          ></i>
+        </div>
+        <small *ngIf="form.get('Password')?.invalid && form.get('Password')?.touched" class="error-message">
+          This field is required
+        </small>
+      </div>
+
+      <button
+        pButton
+        type="submit"
+        class="form-button"
+        [disabled]="form.invalid"
+      >
+        <span class="p-button-label">Sign In</span>
+        <i *ngIf="loading" class="pi pi-spinner pi-spin custom-spinner"></i>
+      </button>
+    </form>
+
+    <div class="form-footer">
+      <span>Don't have an account?</span>
+      <a routerLink="/register">Sign up</a>
+    </div>
+
+  </p-card>
+</div>
