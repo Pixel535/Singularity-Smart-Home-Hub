@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { isTokenExpired } from './jwt.utils';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -17,7 +18,8 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   private hasToken(): boolean {
-    return !!localStorage.getItem(this.tokenKey);
+    const token = localStorage.getItem(this.tokenKey);
+    return !!token && !isTokenExpired(token);
   }
 
   login(data: { UserLogin: string; Password: string }) {
@@ -32,7 +34,7 @@ export class AuthService {
 
   refresh() {
     const refreshToken = this.getRefreshToken();
-  
+
     return this.http.post<any>(`${this.baseUrl}/refresh`, {}, {
       headers: {
         Authorization: `Bearer ${refreshToken}`
@@ -46,6 +48,7 @@ export class AuthService {
     localStorage.clear();
     this.isLoggedIn$.next(false);
     clearTimeout(this.idleTimer);
+    this.router.navigate(['/login']);
   }
 
   private setTokens(tokens: { access_token: string; refresh_token: string }) {
@@ -58,17 +61,17 @@ export class AuthService {
     localStorage.setItem(this.tokenKey, token);
   }
 
-  getAccessToken() {
-    return localStorage.getItem(this.tokenKey);
+  getAccessToken(): string | null {
+    const token = localStorage.getItem(this.tokenKey);
+    return token && !isTokenExpired(token) ? token : null;
   }
 
-  getRefreshToken() {
+  getRefreshToken(): string | null {
     return localStorage.getItem(this.refreshKey);
   }
 
   startIdleWatch() {
     this.resetIdleTimer();
-
     ['mousemove', 'keydown', 'click'].forEach(event =>
       document.addEventListener(event, this.resetIdleTimer.bind(this))
     );
@@ -78,8 +81,7 @@ export class AuthService {
     clearTimeout(this.idleTimer);
     this.idleTimer = setTimeout(() => {
       this.logout();
-      alert('Zostałeś wylogowany z powodu braku aktywności.');
-      this.router.navigate(['/login']);
+      alert('You were logged out because of inactivity!');
     }, this.idleLimitMs);
   }
 }

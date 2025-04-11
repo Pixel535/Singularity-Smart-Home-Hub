@@ -6,7 +6,8 @@ export const canActivateAuth: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  if (!auth.getAccessToken()) {
+  const token = auth.getAccessToken();
+  if (!token) {
     router.navigate(['/login']);
     return false;
   }
