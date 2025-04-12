@@ -26,48 +26,9 @@ import { HeaderComponent } from '../shared/header/header.component';
     HeaderComponent
   ]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
   private baseUrl = 'http://127.0.0.1:5000/dashboard';
   private auth = inject(AuthService);
   private router = inject(Router);
   private http = inject(HttpClient);
-
-  userLogin: string | null = null;
-
-  menuItems = [
-    {
-      label: 'Profile',
-      icon: 'pi pi-user',
-      command: () => this.router.navigate(['/profile'])
-    },
-    {
-      label: 'Log out',
-      icon: 'pi pi-sign-out',
-      command: () => this.logout()
-    }
-  ];
-
-  ngOnInit(): void {
-    this.auth.startIdleWatch();
-    this.fetchUserInfo();
-  }
-
-  fetchUserInfo() {
-    this.http.get<{ user: string }>(`${this.baseUrl}/dashboardInfo`).subscribe({
-      next: res => {
-        this.userLogin = res.user;
-      },
-      error: () => {
-        this.auth.logout();
-      }
-    });
-  }
-
-  logout() {
-    this.auth.logout();
-  }
-
-  goHome() {
-    this.router.navigate(['/dashboard']);
-  }
 }
