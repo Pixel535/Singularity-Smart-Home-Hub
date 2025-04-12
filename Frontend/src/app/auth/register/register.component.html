@@ -53,7 +53,7 @@
               id="ConfirmPassword"
               pInputText
               formControlName="ConfirmPassword"
-              [class.invalid]="form.hasError('passwordMismatch') && form.get('ConfirmPassword')?.touched"
+              [class.invalid]="form.get('ConfirmPassword')?.invalid && form.get('ConfirmPassword')?.touched || (form.hasError('passwordMismatch') && form.get('ConfirmPassword')?.touched)"
             />
             <i
               class="pi"
