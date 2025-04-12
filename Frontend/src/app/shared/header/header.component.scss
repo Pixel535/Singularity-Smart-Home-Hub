@@ -1,0 +1,45 @@
+@use '../../shared/variables.scss' as v;
+
+:host ::ng-deep .header.p-menubar,
+:host ::ng-deep .p-menubar-root,
+:host ::ng-deep .p-menubar {
+  background-color: v.$secondary-color !important;
+  border: none !important;
+  box-shadow: 0 0 24px v.$shadow-color;
+}
+
+:host ::ng-deep .p-menubar-start,
+:host ::ng-deep .p-menubar-end {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  cursor: pointer;
+
+  .image {
+    height: 60px;
+    margin-left: 1rem;
+  }
+}
+
+.user-menu-wrapper {
+  display: flex;
+  align-items: center;
+  padding-right: 2rem;
+
+  .user-avatar {
+    background-color: #fff !important;
+    color: v.$secondary-color !important;
+    cursor: pointer;
+    border: 2px solid white;
+  }
+}
+
+
+.welcome-text {
+    padding-right: 3rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+

@@ -18,7 +18,9 @@ def create_app():
     jwt.init_app(app)
 
     from Backend.App.Auth.Routes.auth_routes import auth_route
+    from Backend.App.Dashboard.Routes.dashboard_routes import dashboard_route
 
     app.register_blueprint(auth_route, url_prefix="/auth")
+    app.register_blueprint(dashboard_route, url_prefix="/dashboard")
 
     return app

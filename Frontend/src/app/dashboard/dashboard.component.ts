@@ -1,8 +1,14 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { MenubarModule } from 'primeng/menubar';
+import { AvatarModule } from 'primeng/avatar';
+import { TieredMenuModule } from 'primeng/tieredmenu';
 import { ButtonModule } from 'primeng/button';
+import { ChipModule } from 'primeng/chip';
+import { HeaderComponent } from '../shared/header/header.component';
 
 @Component({
   standalone: true,
@@ -11,28 +17,57 @@ import { ButtonModule } from 'primeng/button';
   styleUrls: ['./dashboard.component.scss'],
   imports: [
     CommonModule,
-    ButtonModule
+    RouterModule,
+    MenubarModule,
+    AvatarModule,
+    TieredMenuModule,
+    ButtonModule,
+    ChipModule,
+    HeaderComponent
   ]
 })
 export class DashboardComponent implements OnInit {
+  private baseUrl = 'http://127.0.0.1:5000/dashboard';
   private auth = inject(AuthService);
   private router = inject(Router);
+  private http = inject(HttpClient);
 
   userLogin: string | null = null;
 
-  ngOnInit(): void {
-    const token = this.auth.getAccessToken();
-    if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      this.userLogin = payload.sub || payload.identity || null;
+  menuItems = [
+    {
+      label: 'Profile',
+      icon: 'pi pi-user',
+      command: () => this.router.navigate(['/profile'])
+    },
+    {
+      label: 'Log out',
+      icon: 'pi pi-sign-out',
+      command: () => this.logout()
     }
-  
+  ];
+
+  ngOnInit(): void {
     this.auth.startIdleWatch();
+    this.fetchUserInfo();
   }
-  
+
+  fetchUserInfo() {
+    this.http.get<{ user: string }>(`${this.baseUrl}/dashboardInfo`).subscribe({
+      next: res => {
+        this.userLogin = res.user;
+      },
+      error: () => {
+        this.auth.logout();
+      }
+    });
+  }
 
   logout() {
     this.auth.logout();
-    this.router.navigate(['/login']);
+  }
+
+  goHome() {
+    this.router.navigate(['/dashboard']);
   }
 }

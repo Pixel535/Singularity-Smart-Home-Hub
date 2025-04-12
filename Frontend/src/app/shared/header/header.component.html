@@ -1,0 +1,27 @@
+<p-menubar class="header">
+    <ng-template pTemplate="start">
+      <div class="logo" (click)="goHome()">
+        <img src="/assets/images/logo2_white.png" alt="Logo" class="image" />
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="end">
+        <div class="welcome-text">
+            Welcome, {{ userLogin }}!
+        </div>
+      <div class="user-menu-wrapper">
+        <p-tieredMenu
+          [model]="menuItems"
+          popup
+          #userMenu
+          appendTo="body"
+        ></p-tieredMenu>
+  
+        <p-avatar
+          icon="pi pi-user"
+          class="user-avatar"
+          (click)="userMenu.toggle($event)"
+        ></p-avatar>
+      </div>
+    </ng-template>
+  </p-menubar>
