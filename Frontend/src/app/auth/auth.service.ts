@@ -6,7 +6,7 @@ import { isTokenExpired } from './jwt.utils';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'http://localhost:5000/auth';
+  private baseUrl = 'http://127.0.0.1:5000/auth';
   private tokenKey = 'access_token';
   private refreshKey = 'refresh_token';
 
