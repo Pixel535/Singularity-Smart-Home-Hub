@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
+from supabase import create_client
 
 load_dotenv()
 
@@ -11,3 +12,4 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
     FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN")
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
