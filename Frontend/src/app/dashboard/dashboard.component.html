@@ -1,7 +1,146 @@
+<p-toast position="top-center"></p-toast>
+
+<app-confirm-dialog
+  [visible]="showDeleteConfirm"
+  [header]="'Delete House'"
+  [message]="'Are you sure you want to delete house with this ID: ' + selectedHouseToDelete?.HouseID + ' ?'"
+  (accept)="acceptDelete()"
+  (reject)="closeDeleteDialog()"
+  (closed)="closeDeleteDialog()"
+></app-confirm-dialog>
+
+
 <app-header></app-header>
 
 <div class="dashboard-body">
   <div class="badge-wrapper">
     <span class="badge">Houses</span>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+  </div>
+
+  <div *ngIf="!loading && houses.length === 0" class="empty-state">
+    <p>You haven't added any house yet!</p>
+  </div>
+
+  <div *ngIf="!loading && houses.length > 0" class="houses-list">
+    <div class="house-card" *ngFor="let house of houses">
+      <button
+        class="delete-button"
+        (click)="confirmDelete(house)"
+        pButton
+        icon="pi pi-times"
+        tooltipPosition="left"
+      ></button>
+
+      <div class="house-header">
+        <span class="house-id">House ID: {{ house.HouseID }}</span>
+      </div>
+      <p><strong>{{ house.City }}</strong>, {{ house.Country }}</p>
+      <p>{{ house.StreetAddress }} {{ house.PostalCode }}</p>
+      <button
+        class="edit-button"
+        (click)="toggleAddForm(house)"
+        pButton
+        icon="pi pi-pencil"
+        tooltip="Edit house"
+        tooltipPosition="left"
+      ></button>
+    </div>
+  </div>
+
+  <div class="add-house-btn-container">
+    <button pButton label="Add House" icon="pi pi-plus" (click)="toggleAddForm()"></button>
+  </div>
+
+</div>
+
+<div class="overlay" *ngIf="showAddForm" (click)="closeForm($event)">
+  <div class="form-card" (click)="$event.stopPropagation()">
+    <button class="close-button pi pi-times" (click)="toggleAddForm()"></button>
+    
+    <div class="form-header">
+      <p class="subtitle">Add new house</p>
+    </div>
+
+    <form [formGroup]="addHouseForm" (ngSubmit)="submitAddHouse()">
+      <div class="field">
+        <label for="Country">Country</label>
+        <p-dropdown
+          inputId="Country"
+          [options]="countries"
+          optionLabel="name"
+          formControlName="Country"
+          class="country-dropdown"
+          [class.invalid]="isInvalid('Country')"
+          [filter]="true"
+          placeholder="Select a country"
+          [showClear]="true"
+          [virtualScroll]="true"
+          [itemSize]="35"
+          [autoDisplayFirst]="false"
+        >
+          <ng-template let-country pTemplate="item">
+            <div class="country-option">
+              <img
+                [src]="'https://flagcdn.com/w40/' + country.code.toLowerCase() + '.png'"
+                class="flag"
+                alt="{{ country.name }}"
+              />
+              {{ country.name }}
+            </div>
+          </ng-template>
+        </p-dropdown>
+      
+        <small *ngIf="isInvalid('Country')" class="error-message">Country is required.</small>
+      </div>
+      
+
+      <div class="field">
+        <label for="City">City</label>
+        <input id="City" type="text" pInputText formControlName="City" [class.invalid]="isInvalid('City')" />
+        <small *ngIf="isInvalid('City')" class="error-message">City is required.</small>
+      </div>
+
+      <div class="field">
+        <label for="StreetAddress">Street Address</label>
+        <input id="StreetAddress" type="text" pInputText formControlName="StreetAddress" [class.invalid]="isInvalid('StreetAddress')" />
+        <small *ngIf="isInvalid('StreetAddress')" class="error-message">Street Address is required.</small>
+      </div>
+
+      <div class="field">
+        <label for="PostalCode">Postal Code</label>
+        <input id="PostalCode" type="text" pInputText formControlName="PostalCode" [class.invalid]="isInvalid('PostalCode')" />
+        <small *ngIf="isInvalid('PostalCode')" class="error-message">Postal Code is required.</small>
+      </div>
+
+      <div class="field">
+        <label for="PIN">
+          PIN
+          <i
+            class="pi pi-info-circle"
+            pTooltip="PIN is a 6-digit code used to log in directly to this house."
+            tooltipPosition="top"
+            style="margin-left: 0.5rem; cursor: pointer;"
+          ></i>
+        </label>
+        <input id="PIN" type="text" pInputText formControlName="PIN" [class.invalid]="isInvalid('PIN')" />
+        <small *ngIf="isInvalid('PIN')" class="error-message">
+          <ng-container *ngIf="addHouseForm.get('PIN')?.errors?.['required']">PIN is required.</ng-container>
+          <ng-container *ngIf="addHouseForm.get('PIN')?.errors?.['pattern']">PIN must be exactly 6 digits.</ng-container>
+        </small>
+      </div>
+
+      <button
+        pButton
+        type="submit"
+        class="form-button"
+        [label]="isEditing ? 'Save' : 'Add House'"
+        [disabled]="addHouseForm.invalid"
+      ></button>
+
+    </form>
   </div>
 </div>

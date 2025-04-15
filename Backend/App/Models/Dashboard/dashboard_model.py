@@ -1,68 +1,107 @@
 from Backend.App import Config
+from Backend.App.Models.User.user_model import get_user_by_login
+from Backend.App.config import log_and_message_response, Statuses
+
 
 def get_houses_by_user_login(user_login):
-    user = Config.supabase.table("User").select("UserID").eq("UserLogin", user_login).single().execute()
+    user = get_user_by_login(user_login)
+
     if not user.data:
+        log_and_message_response("User not found", Statuses.NOT_FOUND, "error", None)
         return []
     user_id = user.data["UserID"]
 
-    response = Config.supabase.from_("UserHouse").select("*, House(*)").eq("UserID", user_id).execute()
+    try:
+        response = Config.supabase.from_("UserHouse").select("*, House(*)").eq("UserID", user_id).execute()
+    except Exception as e:
+        log_and_message_response("Error with getting houses", Statuses.BAD_REQUEST, "error", e)
+        return []
 
-    if response.data:
-        return [row["House"] for row in response.data]
-    return []
+    return [row["House"] for row in response.data]
+
 
 def insert_user_house(user_login, house_data):
-    user = Config.supabase.table("User").select("UserID").eq("UserLogin", user_login).single().execute()
-    if not user.data:
-        return False
+    user = get_user_by_login(user_login)
+
+    if not user.data or not house_data:
+        return log_and_message_response("No user or House", Statuses.NOT_FOUND, "error", None)
+
     user_id = user.data["UserID"]
 
-    house_insert = Config.supabase.table("House").insert(house_data).execute()
-    if not house_insert.data:
-        return False
+    country = house_data.get("Country", {})
+    house_data["Country"] = country.get("name", "")
+    house_data["CountryCode"] = country.get("code", "")
+
+    try:
+        house_insert = Config.supabase.table("House").insert(house_data).execute()
+    except Exception as e:
+        return log_and_message_response("House insertion failed", Statuses.BAD_REQUEST, "error", e)
 
     house_id = house_insert.data[0]["HouseID"]
 
-    user_house_insert = Config.supabase.table("UserHouse").insert({
-        "UserID": user_id,
-        "HouseID": house_id,
-        "Role": "Owner"
-    }).execute()
+    try:
+        Config.supabase.table("UserHouse").insert({
+            "UserID": user_id,
+            "HouseID": house_id,
+            "Role": "Owner"
+        }).execute()
+        return log_and_message_response("House added successfully", Statuses.CREATED, "success", None)
+    except Exception as e:
+        return log_and_message_response("House insertion failed", Statuses.BAD_REQUEST, "error", e)
 
-    return bool(user_house_insert.data)
 
 def delete_user_house(user_login, house_data):
-    user = Config.supabase.table("User").select("UserID").eq("UserLogin", user_login).single().execute()
+    user = get_user_by_login(user_login)
+
     if not user.data:
-        return False
+        return log_and_message_response("User not found", Statuses.NOT_FOUND, "error", None)
 
     user_id = user.data["UserID"]
     house_id = house_data.get("HouseID")
-    if not house_id:
-        return False
 
-    user_house = Config.supabase.table("UserHouse").select("*").eq("UserID", user_id).eq("HouseID", house_id).single().execute()
+    if not house_id:
+        return log_and_message_response("There is no such house", Statuses.NOT_FOUND, "error", None)
+
+    user_house = get_user_house_by_userID_houseID(user_id, house_id)
 
     if not user_house.data or user_house.data["Role"] != "Owner":
-        return False
+        return log_and_message_response("UserHouse not found or User is not Owner", Statuses.NOT_FOUND, "error", None)
 
-    Config.supabase.table("House").delete().eq("HouseID", house_id).execute()
-    return True
+    try:
+        return Config.supabase.table("House").delete().eq("HouseID", house_id).execute()
+    except Exception as e:
+        return log_and_message_response("House deletion failed", Statuses.BAD_REQUEST, "error", e)
+
 
 def update_user_house(user_login, house_data):
-    user = Config.supabase.table("User").select("UserID").eq("UserLogin", user_login).single().execute()
+    user = get_user_by_login(user_login)
+
     if not user.data:
-        return False
+        return log_and_message_response("User not found", Statuses.NOT_FOUND, "error", None)
 
     user_id = user.data["UserID"]
     house_id = house_data.get("HouseID")
+
     if not house_id:
-        return False
+        return log_and_message_response("There is no such house", Statuses.NOT_FOUND, "error", None)
 
-    user_house = Config.supabase.table("UserHouse").select("*").eq("UserID", user_id).eq("HouseID", house_id).single().execute()
+    user_house = get_user_house_by_userID_houseID(user_id, house_id)
+
     if not user_house.data or user_house.data["Role"] != "Owner":
-        return False
+        return log_and_message_response("UserHouse not found or User is not Owner", Statuses.NOT_FOUND, "error", None)
 
-    updated = Config.supabase.table("House").update(house_data).eq("HouseID", house_id).execute()
-    return bool(updated.data)
+    country = house_data.get("Country", {})
+    house_data["Country"] = country.get("name", "")
+    house_data["CountryCode"] = country.get("code", "")
+
+    try:
+        Config.supabase.table("House").update(house_data).eq("HouseID", house_id).execute()
+        return log_and_message_response("House updated successfully", Statuses.OK, "success", None)
+    except Exception as e:
+        return log_and_message_response("House update failed", Statuses.BAD_REQUEST, "error", e)
+
+def get_user_house_by_userID_houseID(userID, houseID):
+    try:
+        return Config.supabase.table("UserHouse").select("*").eq("UserID", userID).eq("HouseID", houseID).single().execute()
+    except Exception as e:
+        return log_and_message_response("UserHouse getting failed", Statuses.BAD_REQUEST, "error", e)

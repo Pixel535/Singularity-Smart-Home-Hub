@@ -2,72 +2,61 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { isTokenExpired } from './jwt.utils';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'http://127.0.0.1:5000/auth';
-  private tokenKey = 'access_token';
-  private refreshKey = 'refresh_token';
-
-  isLoggedIn$ = new BehaviorSubject<boolean>(this.hasToken());
+  private baseUrl = 'http://localhost:5000/auth';
+  isLoggedIn$ = new BehaviorSubject<boolean>(false);
 
   private idleTimer: any;
   private idleLimitMs = 15 * 60 * 1000; // 15 min
+  private refreshInterval: any;
+  private refreshRateMs = 14 * 60 * 1000; // 14 min
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  private hasToken(): boolean {
-    const token = localStorage.getItem(this.tokenKey);
-    return !!token && !isTokenExpired(token);
-  }
-
   login(data: { UserLogin: string; Password: string }) {
-    return this.http.post<any>(`${this.baseUrl}/login`, data).pipe(
-      tap(tokens => this.setTokens(tokens))
+    return this.http.post(`${this.baseUrl}/login`, data, { withCredentials: true }).pipe(
+      tap(() => {
+        this.isLoggedIn$.next(true);
+        this.startIdleWatch();
+        this.startRefreshLoop();
+      })
     );
   }
 
   register(data: any) {
-    return this.http.post(`${this.baseUrl}/register`, data);
+    return this.http.post(`${this.baseUrl}/register`, data, { withCredentials: true });
   }
 
   refresh() {
-    const refreshToken = this.getRefreshToken();
-
-    return this.http.post<any>(`${this.baseUrl}/refresh`, {}, {
+    return this.http.post(`${this.baseUrl}/refresh`, {}, {
+      withCredentials: true,
       headers: {
-        Authorization: `Bearer ${refreshToken}`
+        'X-CSRF-TOKEN': this.getCsrfToken(true)
       }
-    }).pipe(
-      tap(tokens => this.setAccessToken(tokens.access_token))
-    );
+    });
   }
 
   logout() {
-    localStorage.clear();
-    this.isLoggedIn$.next(false);
-    clearTimeout(this.idleTimer);
-    this.router.navigate(['/login']);
+    this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true }).subscribe(() => {
+      this.isLoggedIn$.next(false);
+      clearTimeout(this.idleTimer);
+      clearInterval(this.refreshInterval);
+      this.router.navigate(['/login']);
+    });
   }
 
-  private setTokens(tokens: { access_token: string; refresh_token: string }) {
-    localStorage.setItem(this.tokenKey, tokens.access_token);
-    localStorage.setItem(this.refreshKey, tokens.refresh_token);
-    this.isLoggedIn$.next(true);
+  getUser() {
+    return this.http.get<{ user: string }>(`${this.baseUrl}/me`, {
+      withCredentials: true
+    });
   }
 
-  private setAccessToken(token: string) {
-    localStorage.setItem(this.tokenKey, token);
-  }
-
-  getAccessToken(): string | null {
-    const token = localStorage.getItem(this.tokenKey);
-    return token && !isTokenExpired(token) ? token : null;
-  }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem(this.refreshKey);
+  private getCsrfToken(isRefresh = false): string {
+    const cookieName = isRefresh ? 'csrf_refresh_token' : 'csrf_access_token';
+    const match = document.cookie.match(new RegExp(`(^| )${cookieName}=([^;]+)`));
+    return match ? match[2] : '';
   }
 
   startIdleWatch() {
@@ -83,5 +72,24 @@ export class AuthService {
       this.logout();
       alert('You were logged out because of inactivity!');
     }, this.idleLimitMs);
+  }
+
+  startRefreshLoop() {
+    clearInterval(this.refreshInterval);
+    this.refreshInterval = setInterval(() => {
+      this.refreshToken();
+    }, this.refreshRateMs);
+  }
+  
+  private refreshToken() {
+    this.refresh().subscribe({
+      next: () => {
+        console.log('[JWT] Access token refreshed');
+      },
+      error: () => {
+        console.warn('[JWT] Refresh failed — logging out');
+        this.logout();
+      }
+    });
   }
 }

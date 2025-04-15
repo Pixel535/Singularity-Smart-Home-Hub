@@ -12,7 +12,16 @@ export class RedirectComponent implements OnInit {
   private router = inject(Router);
 
   ngOnInit(): void {
-    const token = this.auth.getAccessToken();
-    this.router.navigate([token ? '/dashboard' : '/login']);
+    this.auth.getUser().subscribe({
+      next: () => {
+        this.auth.isLoggedIn$.next(true);
+        this.auth.startRefreshLoop();
+        this.router.navigate(['/dashboard']);
+      },
+      error: () => {
+        this.auth.isLoggedIn$.next(false);
+        this.router.navigate(['/login']);
+      }
+    });
   }
 }

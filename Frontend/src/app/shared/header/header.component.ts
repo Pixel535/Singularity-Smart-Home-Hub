@@ -40,7 +40,7 @@ export class HeaderComponent {
   ];
 
   constructor() {
-    this.loadUserLoginFromToken();
+    this.loadUserLogin();
   }
 
   logout() {
@@ -51,16 +51,10 @@ export class HeaderComponent {
     this.router.navigate(['/dashboard']);
   }
 
-  private loadUserLoginFromToken(): void {
-    const token = this.auth.getAccessToken();
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        this.userLogin = payload.sub || payload.identity || null;
-      } catch (e) {
-        console.error('Invalid JWT token format:', e);
-        this.userLogin = null;
-      }
-    }
+  private loadUserLogin(): void {
+    this.auth.getUser().subscribe({
+      next: (res) => this.userLogin = res.user,
+      error: () => this.userLogin = null
+    });
   }
 }

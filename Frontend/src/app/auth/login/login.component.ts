@@ -44,33 +44,40 @@ export class LoginComponent {
   });
 }
 
-  onSubmit() {
-    if (this.form.invalid) return;
-  
-    const { UserLogin, Password } = this.form.value;
-  
-    if (!UserLogin || !Password) return;
-  
-    this.loading = true;
-  
-    this.auth.login({ UserLogin, Password }).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Logged in',
-          detail: 'Logged in successfully'
-        });
-        this.router.navigate(['/dashboard']);
-      },
-      error: err => {
-        const detail = err?.error?.msg || 'Error with login';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail
-        });
-        this.loading = false;
-      }
-    });
-  }
+onSubmit() {
+  if (this.form.invalid) return;
+
+  const { UserLogin, Password } = this.form.value;
+  if (!UserLogin || !Password) return;
+
+  this.loading = true;
+
+  this.auth.login({ UserLogin, Password }).subscribe({
+    next: () => {
+      this.auth.getUser().subscribe({
+        next: (res) => {
+          this.auth.isLoggedIn$.next(true);
+          this.router.navigate(['/dashboard']);
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Could not verify login session'
+          });
+          this.loading = false;
+        }
+      });
+    },
+    error: err => {
+      const detail = err?.error?.msg || 'Error with login';
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
+      this.loading = false;
+    }
+  });
+}
 }

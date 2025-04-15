@@ -1,55 +1,33 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { AuthService } from './auth.service';
-import { Router } from '@angular/router';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 import { HttpErrorResponse, HttpRequest } from '@angular/common/http';
 
-let isRefreshing = false;
-
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+  const isRefresh = req.url.endsWith('/auth/refresh');
 
-  const isAuthRequest = req.url.includes('/auth/login') || req.url.includes('/auth/register');
-  if (isAuthRequest) {
-    return next(req);
-  }
+  const csrfToken = getCsrfToken();
 
-  const token = authService.getAccessToken();
+  const shouldAddCsrf =
+    !isRefresh &&
+    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method.toUpperCase()) &&
+    csrfToken;
 
-  if (token) {
-    req = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
-    });
-  }
+  const modifiedReq = req.clone({
+    ...(shouldAddCsrf && {
+      setHeaders: { 'X-CSRF-TOKEN': csrfToken }
+    }),
+    withCredentials: true
+  });
 
-  return next(req).pipe(
+  return next(modifiedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !isRefreshing) {
-        isRefreshing = true;
-
-        return authService.refresh().pipe(
-          switchMap(() => {
-            isRefreshing = false;
-
-            const newToken = authService.getAccessToken();
-            const clonedReq = req.clone({
-              setHeaders: { Authorization: `Bearer ${newToken}` }
-            });
-
-            return next(clonedReq);
-          }),
-          catchError(refreshError => {
-            isRefreshing = false;
-            authService.logout();
-            router.navigate(['/login']);
-            return throwError(() => refreshError);
-          })
-        );
-      }
-
       return throwError(() => error);
     })
   );
 };
+
+
+function getCsrfToken(): string {
+  const match = document.cookie.match(new RegExp('(^| )csrf_access_token=([^;]+)'));
+  return match ? match[2] : '';
+}

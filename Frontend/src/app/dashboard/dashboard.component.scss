@@ -1,17 +1,203 @@
 @use '../shared/variables.scss' as v;
+@use '../shared/form-style.scss' as *;
+@use 'sass:color';
 
-.badge-wrapper {
-    margin-top: 3rem;
+.dashboard-body {
+  padding: 2rem;
+
+  .badge-wrapper {
     display: flex;
     justify-content: center;
-  
+    margin-bottom: 2rem;
+
     .badge {
       background-color: v.$secondary-color;
-      color: #fff;
+      color: v.$text-color;
+      padding: 0.6rem 1.2rem;
       border-radius: 999px;
-      padding: 0.5rem 1.5rem;
-      font-weight: 600;
       font-size: 1.2rem;
-      box-shadow: 0 0 24px v.$shadow-color;
+      font-weight: 600;
     }
   }
+
+  .loading-spinner,
+  .empty-state {
+    text-align: center;
+    margin-top: 16rem;
+    color: v.$text-color-darkest;
+
+    p {
+      font-size: 2.5rem;
+      margin-bottom: 4rem;
+    }
+  }
+
+  .houses-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+
+    .house-card {
+      position: relative;
+      background: #1e1e2f;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1rem;
+    }
+    
+    .delete-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 1.2rem;
+      z-index: 10;
+    
+      &:hover {
+        color: v.$error-color;
+      }
+    }
+
+    .edit-button {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 1.2rem;
+      z-index: 10;
+    
+      &:hover {
+        color: v.$secondary-color;
+      }
+    }
+  }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  padding-top: 0.5rem;
+  padding-right: 1rem;
+  color: #fff;
+  cursor: pointer;
+
+  &:hover {
+    color: #ccc;
+  }
+}
+
+.form-card {
+  position: relative;
+
+  .close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+      color: #ccc;
+    }
+  }
+
+  input {
+    height: 3rem !important;
+    min-height: 3rem !important;
+    max-height: 3rem !important;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.form-card {
+  animation: fadeInUp 0.4s ease-out;
+  transition: all 0.3s ease-in-out;
+}
+
+.country-dropdown {
+  width: 100%;
+
+  .p-dropdown-panel {
+    max-height: 300px;
+  }
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+}
+
+.country-option .flag {
+  width: 20px;
+  margin-right: 0.5rem;
+  border-radius: 3px;
+}
+
+.add-house-btn-container {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+
+    button {
+    background-color: v.$secondary-color;
+    color: v.$text-color;
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    
+    &:hover {
+      background-color: v.$hover-secondary-color;
+    }
+  }
+}
+
+.house-id {
+  font-weight: bold;
+  color: v.$text-color;
+  font-size: 1.25rem;
+}
+
+.house-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}

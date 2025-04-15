@@ -1,43 +1,63 @@
-from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity
+from flask import jsonify
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, set_access_cookies, \
+    set_refresh_cookies, get_csrf_token
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from Backend.App.Models.User.user_model import get_user_by_login, get_user_by_mail, get_user_by_phone, create_user
+import logging
+
+from Backend.App.config import Statuses, log_and_message_response, Config
+
+logger = logging.getLogger(__name__)
 
 
 def register_user(data):
     if get_user_by_login(data["UserLogin"]).data:
-        return {"msg": "Login already exists"}, 409
+        return log_and_message_response("Login already exists", Statuses.CONFLICT, "info", None)
     if get_user_by_mail(data["Mail"]).data:
-        return {"msg": "Email already in use"}, 409
+        return log_and_message_response("Email already in use", Statuses.CONFLICT, "info", None)
     if get_user_by_phone(data["TelephoneNumber"]).data:
-        return {"msg": "Phone number already in use"}, 409
+        return log_and_message_response("Phone number already in use", Statuses.CONFLICT, "info", None)
 
     data["Password"] = generate_password_hash(data["Password"])
+
     try:
         create_user(data)
-        return {"msg": "User created"}, 201
-    except Exception:
-        return {"msg": "Error occured during Registering"}, 401
+        return log_and_message_response("User created", Statuses.CREATED, "success", None)
+    except Exception as e:
+        return log_and_message_response("Error occured during Registering", Statuses.UNAUTHORIZED, "error", e)
+
 
 def login_user(identifier, password):
     user = get_user_by_login(identifier)
     if not user.data:
         user = get_user_by_mail(identifier)
         if not user.data:
-            return {"msg": "User not found"}, 401
+            return log_and_message_response("User not found", Statuses.NOT_FOUND, "error", None)
 
     if not check_password_hash(user.data["Password"], password):
-        return {"msg": "Invalid credentials"}, 401
+        return log_and_message_response("Invalid credentials", Statuses.UNAUTHORIZED, "error", None)
 
     access_token = create_access_token(identity=user.data["UserLogin"])
     refresh_token = create_refresh_token(identity=user.data["UserLogin"])
 
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token
-    }, 200
+    response = jsonify({"msg": "Login successful"})
+    set_access_cookies(response, access_token)
+    set_refresh_cookies(response, refresh_token)
+
+    return response, Statuses.OK
+
 
 def refresh_token_service():
     identity = get_jwt_identity()
     new_access_token = create_access_token(identity=identity)
-    return {"access_token": new_access_token}, 200
+    response = jsonify({"msg": "Token refreshed"})
+    set_access_cookies(response, new_access_token)
+    return response, Statuses.OK
+
+
+def logout_user():
+    response = jsonify({"msg": "Logout successful"})
+    response.delete_cookie("access_token_cookie")
+    response.delete_cookie("refresh_token_cookie")
+    return response, Statuses.OK

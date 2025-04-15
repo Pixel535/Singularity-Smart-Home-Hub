@@ -10,10 +10,10 @@ def create_app():
     app.config.from_object(Config)
 
     CORS(app,
-         origins=[Config.FRONTEND_ORIGIN],
+         resources={r"/*": {"origins": Config.FRONTEND_ORIGIN}},
          supports_credentials=True,
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-         allow_headers=["Content-Type", "Authorization"])
+         allow_headers=["Content-Type", "Authorization", "X-CSRF-TOKEN"])
 
     jwt.init_app(app)
 

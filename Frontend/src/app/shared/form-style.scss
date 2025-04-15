@@ -96,11 +96,11 @@
 }
 
 .field input.invalid {
-  border-color: #e53935 !important;
+  border-color: v.$error-color !important;
 }
 
 .error-message {
-  color: #e53935;
+  color: v.$error-color;
   font-size: 0.8rem;
   margin-top: 0.25rem;
   display: block;
