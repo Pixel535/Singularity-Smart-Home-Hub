@@ -24,6 +24,16 @@ export const routes: Routes = [
     canActivate: [canActivateAuth]
   },
   {
+    path: 'profile',
+    loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent),
+    canActivate: [canActivateAuth]
+  },
+  {
+    path: 'profile/changePassword',
+    loadComponent: () => import('./profile/change-password/change-password.component').then(m => m.ChangePasswordComponent),
+    canActivate: [canActivateAuth]
+  },
+  {
     path: '**',
     redirectTo: ''
   }

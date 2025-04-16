@@ -1,0 +1,86 @@
+<app-header></app-header>
+
+<p-toast position="top-center"></p-toast>
+
+<app-confirm-dialog
+  [visible]="showConfirm"
+  [header]="'Delete Account'"
+  [message]="'Are you sure you want to permanently delete your account?'"
+  (accept)="confirmDelete()"
+  (reject)="cancelDelete()"
+  (closed)="cancelDelete()"
+/>
+
+<div class="profile-wrapper">
+  <div *ngIf="loading" class="loading">Loading...</div>
+
+  <div *ngIf="!loading && userData" class="form-card">
+    <div class="profile-header">
+      <i class="pi pi-user user-icon"></i>
+      <h2>User Profile</h2>
+      <div class="divider"></div>
+    </div>
+
+    <form [formGroup]="profileForm" *ngIf="profileForm">
+
+      <div class="field">
+        <label>Login:</label>
+        <span>{{ userData.UserLogin }}</span>
+      </div>
+
+      <div class="field">
+        <label>First Name:</label>
+        <ng-container *ngIf="isEditing; else showName">
+          <input type="text" pInputText formControlName="Name" />
+        </ng-container>
+        <ng-template #showName>{{ userData.Name }}</ng-template>
+      </div>
+
+      <div class="field">
+        <label>Last Name:</label>
+        <ng-container *ngIf="isEditing; else showSurname">
+          <input type="text" pInputText formControlName="Surname" />
+        </ng-container>
+        <ng-template #showSurname>{{ userData.Surname }}</ng-template>
+      </div>
+
+      <div class="field">
+        <label>Email:</label>
+        <ng-container *ngIf="isEditing; else showEmail">
+          <input type="email" pInputText formControlName="Mail" />
+        </ng-container>
+        <ng-template #showEmail>{{ userData.Mail }}</ng-template>
+      </div>
+
+      <div class="field">
+        <label>Phone:</label>
+        <ng-container *ngIf="isEditing; else showPhone">
+          <input type="text" pInputText formControlName="TelephoneNumber" />
+        </ng-container>
+        <ng-template #showPhone>{{ userData.TelephoneNumber }}</ng-template>
+      </div>
+
+      <div class="field password-field">
+        <label>Password:</label>
+        <span>**********</span>
+        <button
+          pButton
+          class="btn-password"
+          label="Change Password"
+          icon="pi pi-key"
+          (click)="onChangePassword()"
+        ></button>
+      </div>
+
+      <div class="action-buttons" *ngIf="!isEditing">
+        <button pButton label="Edit Profile" class="btn-edit" icon="pi pi-pencil" (click)="onEditProfile()"></button>
+        <button pButton label="Delete Account" class="btn-delete p-button-outlined" icon="pi pi-trash" (click)="onDeleteAccount()"></button>
+      </div>
+
+      <div class="action-buttons" *ngIf="isEditing">
+        <button pButton label="Save" class="btn-edit" icon="pi pi-check" (click)="saveProfile()" [disabled]="profileForm.invalid"></button>
+        <button pButton label="Cancel" class="btn-delete p-button-outlined" icon="pi pi-times" (click)="cancelEdit()"></button>
+      </div>
+    </form>
+  </div>
+</div>

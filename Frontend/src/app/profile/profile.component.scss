@@ -1,0 +1,142 @@
+@use '../shared/variables.scss' as v;
+
+.profile-wrapper {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+
+  .form-card {
+    background-color: v.$card-color;
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: v.$text-color;
+
+    h2 {
+      margin-bottom: 1.5rem;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+
+      label {
+        font-weight: 600;
+        font-size: 1.2rem;
+        display: block;
+        margin-bottom: 0.3rem;
+      }
+
+      span {
+        display: block;
+        font-size: 1rem;
+      }
+
+      input {
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        height: 50%;
+        max-height: 3rem;
+        border: 1px solid v.$input-border-color;
+        color: v.$text-color-darker;
+
+        &:focus {
+          outline: none;
+          border-color: v.$secondary-color;
+        }
+      }
+    }
+
+    .password-field {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      
+        span {
+          flex: 1;
+          font-size: 1rem;
+        }
+      
+        .btn-password {
+          background-color: v.$secondary-color !important;
+          color: v.$text-color !important;
+          font-weight: 600;
+          border: 1px solid v.$secondary-color !important;
+          border-radius: 6px;
+          padding: 0.4rem 1rem;
+      
+          &:hover {
+            background-color: v.$hover-secondary-color !important;
+            color: white !important;
+          }
+        }
+    }
+  }
+
+  .loading {
+    font-size: 1.5rem;
+    text-align: center;
+    color: v.$text-color;
+  }
+
+  .profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  
+    .user-icon {
+      font-size: 2rem;
+      color: v.$text-color;
+      margin-bottom: 0.5rem;
+    }
+  
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+  
+    .divider {
+      height: 4px;
+      width: 20rem;
+      background-color: v.$secondary-color;
+      margin: 0 auto;
+      border-radius: 999px;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  
+    button {
+      padding: 0.75rem 2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+  
+    .btn-edit {
+      background-color: v.$secondary-color !important;
+      color: v.$text-color !important;
+      border: none !important;
+  
+      &:hover {
+        background-color: v.$hover-secondary-color !important;
+      }
+    }
+  
+    .btn-delete {
+      border: 1px solid #999 !important;
+      color: v.$text-color !important;
+  
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+      }
+    }
+  }
+  
+  
+}

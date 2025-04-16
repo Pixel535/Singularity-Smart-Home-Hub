@@ -25,3 +25,9 @@ def get_user_by_phone(phone):
 
 def create_user(user_data):
     return Config.supabase.table("User").insert(user_data).execute()
+
+def update_user(user_id, data):
+    return Config.supabase.table("User").update(data).eq("UserID", user_id).execute()
+
+def delete_user(user_id):
+    return Config.supabase.table("User").delete().eq("UserID", user_id).execute()
