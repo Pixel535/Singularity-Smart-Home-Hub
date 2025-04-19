@@ -1,12 +1,12 @@
 from flask import jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, set_access_cookies, \
-    set_refresh_cookies, get_csrf_token
+    set_refresh_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from Backend.App.Models.User.user_model import get_user_by_login, get_user_by_mail, get_user_by_phone, create_user
+from Backend.App.Models.user_model import get_user_by_login, get_user_by_mail, get_user_by_phone, create_user
 import logging
 
-from Backend.App.config import Statuses, log_and_message_response, Config
+from Backend.App.config import Statuses, log_and_message_response
 
 logger = logging.getLogger(__name__)
 

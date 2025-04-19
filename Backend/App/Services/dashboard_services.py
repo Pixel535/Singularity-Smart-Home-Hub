@@ -1,5 +1,5 @@
 import logging
-from Backend.App.Models.Dashboard.dashboard_model import get_houses_by_user_login, insert_user_house, delete_user_house, update_user_house
+from Backend.App.Models.dashboard_model import get_houses_by_user_login, insert_user_house, delete_user_house, update_user_house
 from Backend.App.config import Statuses, log_and_message_response
 
 logger = logging.getLogger(__name__)

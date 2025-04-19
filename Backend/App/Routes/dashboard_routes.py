@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from Backend.App.Dashboard.Services.dashboard_services import get_user_houses, add_house, remove_house, edit_house
+from Backend.App.Services.dashboard_services import get_user_houses, add_house, remove_house, edit_house
 import logging
 
 logger = logging.getLogger(__name__)

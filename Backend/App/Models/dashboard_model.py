@@ -1,5 +1,5 @@
 from Backend.App import Config
-from Backend.App.Models.User.user_model import get_user_by_login
+from Backend.App.Models.user_model import get_user_by_login
 from Backend.App.config import log_and_message_response, Statuses
 
 

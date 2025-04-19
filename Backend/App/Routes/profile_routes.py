@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from Backend.App.Profile.Services.profile_services import get_user_profile, update_user_profile, delete_user_account, \
+from Backend.App.Services.profile_services import get_user_profile, update_user_profile, delete_user_account, \
     change_user_password
 
 profile_route = Blueprint("profile", __name__)

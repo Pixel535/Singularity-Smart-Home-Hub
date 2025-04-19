@@ -1,4 +1,4 @@
-from Backend.App.Models.User.user_model import get_user_by_login, update_user, delete_user
+from Backend.App.Models.user_model import get_user_by_login, update_user, delete_user
 from Backend.App.config import log_and_message_response, Statuses
 from werkzeug.security import generate_password_hash, check_password_hash
 

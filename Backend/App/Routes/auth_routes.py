@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from Backend.App.Auth.Services.auth_services import register_user, login_user, refresh_token_service, logout_user
+from Backend.App.Services.auth_services import register_user, login_user, refresh_token_service, logout_user
 
 auth_route = Blueprint("auth", __name__)
 
