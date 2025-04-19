@@ -29,23 +29,26 @@ def register_user(data):
 
 
 def login_user(identifier, password):
-    user = get_user_by_login(identifier)
-    if not user.data:
-        user = get_user_by_mail(identifier)
-        if not user.data:
-            return log_and_message_response("User not found", Statuses.NOT_FOUND, "error", None)
+    try:
+        user = get_user_by_login(identifier)
+        if not user:
+            user = get_user_by_mail(identifier)
+            if not user:
+                return log_and_message_response("User not found", Statuses.NOT_FOUND, "error", None)
 
-    if not check_password_hash(user.data["Password"], password):
-        return log_and_message_response("Invalid credentials", Statuses.UNAUTHORIZED, "error", None)
+        if not check_password_hash(user.data["Password"], password):
+            return log_and_message_response("Invalid credentials", Statuses.UNAUTHORIZED, "error", None)
 
-    access_token = create_access_token(identity=user.data["UserLogin"])
-    refresh_token = create_refresh_token(identity=user.data["UserLogin"])
+        access_token = create_access_token(identity=user.data["UserLogin"])
+        refresh_token = create_refresh_token(identity=user.data["UserLogin"])
 
-    response = jsonify({"msg": "Login successful"})
-    set_access_cookies(response, access_token)
-    set_refresh_cookies(response, refresh_token)
+        response = jsonify({"msg": "Login successful"})
+        set_access_cookies(response, access_token)
+        set_refresh_cookies(response, refresh_token)
 
-    return response, Statuses.OK
+        return response, Statuses.OK
+    except Exception as e:
+        return log_and_message_response("Unexpected error with login", Statuses.BAD_REQUEST, "error", e)
 
 
 def refresh_token_service():
