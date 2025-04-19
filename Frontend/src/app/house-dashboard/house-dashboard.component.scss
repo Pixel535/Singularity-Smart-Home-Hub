@@ -1,0 +1,39 @@
+@use '../shared/variables.scss' as v;
+
+.house-dashboard {
+  padding: 2rem;
+
+  .title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: v.$text-color;
+  }
+
+  .empty-state {
+    text-align: center;
+    margin-top: 4rem;
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: v.$text-color-darker;
+    }
+  }
+
+  .coming-soon {
+    padding: 2rem;
+    text-align: center;
+    font-style: italic;
+    color: #888;
+  }
+}
+
+.fullscreen-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: v.$text-color;
+  background: v.$background-color;
+}

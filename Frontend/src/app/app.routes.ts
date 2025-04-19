@@ -34,6 +34,17 @@ export const routes: Routes = [
     canActivate: [canActivateAuth]
   },
   {
+    path: 'dashboard/manageUsers/:houseId',
+    loadComponent: () =>
+      import('./dashboard/manage-users/manage-users.component').then(m => m.ManageUsersComponent),
+    canActivate: [canActivateAuth]
+  },
+  {
+    path: 'house/:houseId/dashboard',
+    loadComponent: () => import('./house-dashboard/house-dashboard.component').then(m => m.HouseDashboardComponent),
+    canActivate: [canActivateAuth]
+  },
+  {
     path: '**',
     redirectTo: ''
   }

@@ -140,3 +140,12 @@
   
   
 }
+
+.fullscreen-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: v.$text-color;
+  background: v.$background-color;
+}

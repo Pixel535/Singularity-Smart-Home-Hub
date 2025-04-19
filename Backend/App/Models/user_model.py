@@ -1,5 +1,4 @@
-from Backend.App import Config
-from Backend.App.config import log_and_message_response, Statuses
+from Backend.App.config import log_and_message_response, Statuses, Config
 
 
 def get_user_by_login(login):

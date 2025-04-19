@@ -43,3 +43,14 @@
     font-size: 1.2rem;
 }
 
+.house-menu-wrapper {
+  display: inline-block;
+  margin-right: 1rem;
+
+  .house-avatar {
+    background-color: #fff !important;
+    color: v.$secondary-color !important;
+    cursor: pointer;
+    border: 2px solid white;
+  }
+}

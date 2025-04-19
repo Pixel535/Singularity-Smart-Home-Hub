@@ -1,0 +1,35 @@
+<p-toast position="top-center"></p-toast>
+
+<app-header
+  *ngIf="isLoaded"
+  [houseName]="houseName"
+  [isInsideHouse]="true"
+></app-header>
+
+<div *ngIf="!isLoaded" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
+
+<div class="house-dashboard" *ngIf="isLoaded">
+  <h2 class="title">Dashboard: {{ houseName }}</h2>
+
+  <p-tabView>
+    <p-tabPanel header="Rooms">
+      <div *ngIf="rooms.length === 0 && !loading" class="empty-state">
+        <p>You haven't added any room yet!</p>
+        <button pButton label="Add Room" icon="pi pi-plus"></button>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Devices">
+      <div *ngIf="devices.length === 0 && !loading" class="empty-state">
+        <p>You haven't added any device yet!</p>
+        <button pButton label="Add Device" icon="pi pi-plus"></button>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Functions">
+      <p class="coming-soon">Functionality coming soon...</p>
+    </p-tabPanel>
+  </p-tabView>
+</div>

@@ -42,6 +42,7 @@ export class ProfileComponent implements OnInit {
 
   private baseUrl = 'http://localhost:5000/profile';
 
+  userLogin: string | null = null;
   userData: any = null;
   loading = true;
   isEditing = false;
@@ -50,14 +51,20 @@ export class ProfileComponent implements OnInit {
   profileForm!: FormGroup;
 
   ngOnInit(): void {
+    this.auth.getUser().subscribe({
+      next: (res) => this.userLogin = res.user,
+      error: () => this.userLogin = null
+    });
     this.http.get<{ user: any }>(`${this.baseUrl}/getProfile`, { withCredentials: true }).subscribe({
       next: (res) => {
         this.userData = res.user;
+        this.userLogin = this.userData.UserLogin
         this.initForm(this.userData);
         this.loading = false;
       },
       error: () => {
         this.loading = false;
+        this.userLogin = null;
       }
     });
   }

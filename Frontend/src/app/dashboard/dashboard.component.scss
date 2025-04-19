@@ -44,6 +44,11 @@
       border-radius: 8px;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
       margin-bottom: 1rem;
+      transition: transform 0.2s ease;
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
     }
     
     .delete-button {
@@ -75,7 +80,27 @@
         color: v.$secondary-color;
       }
     }
+
+    .manage-button {
+      position: absolute;
+      top: 0.4rem;
+      left: 3rem;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 1.2rem;
+      z-index: 10;
+    
+      &:hover {
+        color: v.$secondary-color;
+      }
+    }
+    
   }
+}
+
+:host ::ng-deep .manage-button .p-button-icon {
+  font-size: 1.2rem;
 }
 
 .overlay {
@@ -199,10 +224,13 @@
   justify-content: space-between;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
-:host ::ng-deep .p-dropdown.p-focus,
+:host ::ng-deep .p-dropdown.p-focus {
+  border-color: v.$secondary-color;
+}
+
 :host ::ng-deep .p-inputtext:enabled:focus {
   border-color: v.$secondary-color;
 }
@@ -210,4 +238,14 @@
 :host ::ng-deep .p-select-option.p-select-option-selected {
   background-color: color-mix(in srgb, v.$secondary-color, transparent 50%) !important;
   color: #fff !important;
+}
+
+
+.fullscreen-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: v.$text-color;
+  background: v.$background-color;
 }

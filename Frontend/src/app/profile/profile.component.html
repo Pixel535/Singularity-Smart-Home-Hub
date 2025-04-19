@@ -1,4 +1,7 @@
-<app-header></app-header>
+<app-header
+  *ngIf="!loading"
+  [userLogin]="userLogin"
+></app-header>
 
 <p-toast position="top-center"></p-toast>
 
@@ -11,7 +14,11 @@
   (closed)="cancelDelete()"
 />
 
-<div class="profile-wrapper">
+<div *ngIf="loading" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
+
+<div class="profile-wrapper" *ngIf="!loading && userData">
   <div *ngIf="loading" class="loading">Loading...</div>
 
   <div *ngIf="!loading && userData" class="form-card">

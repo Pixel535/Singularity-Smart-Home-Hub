@@ -49,6 +49,7 @@ export class DashboardComponent implements OnInit {
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
 
+  userLogin: string | null = null;
   houses: any[] = [];
   loading = true;
   showAddForm = false;
@@ -62,6 +63,10 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.auth.startIdleWatch();
+    this.auth.getUser().subscribe({
+      next: (res) => this.userLogin = res.user,
+      error: () => this.userLogin = null
+    });
     this.fetchHouses();
 
     this.addHouseForm = this.fb.group({
@@ -200,5 +205,9 @@ export class DashboardComponent implements OnInit {
         });
       }
     });
+  }
+
+  goToManageUsers(houseId: number) {
+    this.router.navigate([`${this.baseUrl}/manageUsers`, houseId]);
   }
 }

@@ -10,43 +10,58 @@
 ></app-confirm-dialog>
 
 
-<app-header></app-header>
+<app-header
+  *ngIf="!loading"
+  [userLogin]="userLogin"
+></app-header>
+<div *ngIf="loading" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
 
-<div class="dashboard-body">
+<div class="dashboard-body" *ngIf="!loading">
   <div class="badge-wrapper">
     <span class="badge">Houses</span>
-  </div>
-
-  <div *ngIf="loading" class="loading-spinner">
-    <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
   </div>
 
   <div *ngIf="!loading && houses.length === 0" class="empty-state">
     <p>You haven't added any house yet!</p>
   </div>
 
-  <div *ngIf="!loading && houses.length > 0" class="houses-list">
-    <div class="house-card" *ngFor="let house of houses">
+  <div *ngIf="houses.length > 0" class="houses-list">
+    <div
+      class="house-card"
+      *ngFor="let house of houses"
+      [routerLink]="['/house', house.HouseID, 'dashboard']"
+      style="cursor: pointer;"
+    >
       <button
         class="delete-button"
-        (click)="confirmDelete(house)"
+        (click)="confirmDelete(house); $event.stopPropagation()"
         pButton
         icon="pi pi-times"
         tooltipPosition="left"
       ></button>
 
       <div class="house-header">
-        <span class="house-id">House ID: {{ house.HouseID }}</span>
         <span class="house-id">{{ house.HouseName }}</span>
       </div>
+      <p><strong>House ID: </strong> {{ house.HouseID }} </p>
       <p><strong>{{ house.City }}</strong>, {{ house.Country }}</p>
       <p>{{ house.StreetAddress }} {{ house.PostalCode }}</p>
       <button
         class="edit-button"
-        (click)="toggleAddForm(house)"
+        (click)="toggleAddForm(house); $event.stopPropagation()"
         pButton
         icon="pi pi-pencil"
         tooltip="Edit house"
+        tooltipPosition="left"
+      ></button>
+      <button
+        class="manage-button"
+        (click)="goToManageUsers(house.HouseID); $event.stopPropagation()"
+        pButton
+        icon="pi pi-users"
+        tooltip="Manage users"
         tooltipPosition="left"
       ></button>
     </div>

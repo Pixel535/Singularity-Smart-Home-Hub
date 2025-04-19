@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { MenubarModule } from 'primeng/menubar';
@@ -6,6 +6,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { TieredMenuModule } from 'primeng/tieredmenu';
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -13,6 +14,7 @@ import { ChipModule } from 'primeng/chip';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   imports: [
+    CommonModule,
     MenubarModule,
     AvatarModule,
     TieredMenuModule,
@@ -21,10 +23,14 @@ import { ChipModule } from 'primeng/chip';
   ]
 })
 export class HeaderComponent {
-  private router = inject(Router);
-  private auth = inject(AuthService);
+  @Input() houseName: string | null = null;
+  @Input() isInsideHouse = false;
+  @Input() userLogin: string | null = null;
 
-  userLogin: string | null = null;
+  constructor(
+    private auth: AuthService,
+    private router: Router
+  ) { }
 
   menuItems = [
     {
@@ -39,9 +45,13 @@ export class HeaderComponent {
     }
   ];
 
-  constructor() {
-    this.loadUserLogin();
-  }
+  houseMenuItems = [
+    {
+      label: 'House Info',
+      icon: 'pi pi-info-circle',
+      command: () => console.log('House Info clicked') // placeholer
+    }
+  ];
 
   logout() {
     this.auth.logout();
@@ -51,10 +61,4 @@ export class HeaderComponent {
     this.router.navigate(['/dashboard']);
   }
 
-  private loadUserLogin(): void {
-    this.auth.getUser().subscribe({
-      next: (res) => this.userLogin = res.user,
-      error: () => this.userLogin = null
-    });
-  }
 }
