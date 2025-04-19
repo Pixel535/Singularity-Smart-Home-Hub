@@ -65,6 +65,7 @@ export class DashboardComponent implements OnInit {
     this.fetchHouses();
 
     this.addHouseForm = this.fb.group({
+      HouseName: ['', Validators.required],
       Country: ['', Validators.required],
       City: ['', Validators.required],
       StreetAddress: ['', Validators.required],
@@ -101,6 +102,7 @@ export class DashboardComponent implements OnInit {
       this.editingHouseId = house.HouseID;
       const selectedCountry = this.countries.find(c => c.code === house.CountryCode);
       this.addHouseForm.patchValue({
+        HouseName: house.HouseName,
         Country: selectedCountry || null,
         City: house.City,
         StreetAddress: house.StreetAddress,

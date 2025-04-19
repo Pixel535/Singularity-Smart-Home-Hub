@@ -201,3 +201,13 @@
   justify-content: center;
   margin-bottom: 1rem;
 }
+
+:host ::ng-deep .p-dropdown.p-focus,
+:host ::ng-deep .p-inputtext:enabled:focus {
+  border-color: v.$secondary-color;
+}
+
+:host ::ng-deep .p-select-option.p-select-option-selected {
+  background-color: color-mix(in srgb, v.$secondary-color, transparent 50%) !important;
+  color: #fff !important;
+}

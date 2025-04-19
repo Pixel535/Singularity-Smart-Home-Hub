@@ -37,6 +37,7 @@
 
       <div class="house-header">
         <span class="house-id">House ID: {{ house.HouseID }}</span>
+        <span class="house-id">{{ house.HouseName }}</span>
       </div>
       <p><strong>{{ house.City }}</strong>, {{ house.Country }}</p>
       <p>{{ house.StreetAddress }} {{ house.PostalCode }}</p>
@@ -66,6 +67,13 @@
     </div>
 
     <form [formGroup]="addHouseForm" (ngSubmit)="submitAddHouse()">
+
+      <div class="field">
+        <label for="HouseName">House Name</label>
+        <input id="HouseName" type="text" pInputText formControlName="HouseName" [class.invalid]="isInvalid('HouseName')" />
+        <small *ngIf="isInvalid('HouseName')" class="error-message">House Name is required.</small>
+      </div>
+
       <div class="field">
         <label for="Country">Country</label>
         <p-dropdown
