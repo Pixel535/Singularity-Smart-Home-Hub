@@ -141,5 +141,10 @@ export class ProfileComponent implements OnInit {
   onChangePassword() {
     this.router.navigate(['/profile/changePassword']);
   }
+
+  isInvalid(fieldName: string): boolean {
+    const control = this.profileForm.get(fieldName);
+    return !!control && control.invalid && control.touched;
+  }
   
 }

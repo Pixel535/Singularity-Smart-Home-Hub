@@ -1,16 +1,17 @@
 <p-toast position="top-center"></p-toast>
 
-<app-header 
-  *ngIf="isLoaded" 
+<app-header
+  *ngIf="!loading"
   [houseName]="houseName"
-  [isInsideHouse]="true" 
+  [isInsideHouse]="true"
+  [houseId]="houseId"
 />
 
-<div *ngIf="!isLoaded" class="fullscreen-loader">
+<div *ngIf="loading" class="fullscreen-loader">
   <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
 </div>
 
-<div class="room-dashboard" *ngIf="isLoaded">
+<div class="room-dashboard" *ngIf="!loading">
   <div class="dashboard-header">
     <i class="pi pi-arrow-left back-arrow" (click)="goBackToHouseDashboard()" title="Back to House"></i>
     <h2 class="title">{{ roomName }}</h2>

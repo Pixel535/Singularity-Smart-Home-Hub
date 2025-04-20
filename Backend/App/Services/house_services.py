@@ -1,5 +1,5 @@
 from Backend.App.Models.house_model import get_house_by_user_and_house_id, get_user_house_by_userID_houseID, \
-    get_rooms_by_house_id, insert_room, get_room_by_id, update_room, delete_room
+    get_rooms_by_house_id, insert_room, get_room_by_id, update_room, delete_room, get_users_assigned_to_house
 from Backend.App.Models.user_model import get_user_by_login
 from Backend.App.config import log_and_message_response, Statuses
 
@@ -139,3 +139,47 @@ def remove_room(user_login, data):
     except Exception as e:
         return log_and_message_response("Failed to delete room", Statuses.BAD_REQUEST, exception=e)
 
+
+def get_users_from_house(user_login, data):
+    try:
+        user = get_user_by_login(user_login)
+        if not user:
+            log_and_message_response("User missing", Statuses.NOT_FOUND)
+            return {"users": []}, Statuses.NOT_FOUND
+    except Exception as e:
+        log_and_message_response("Failed to get user info", Statuses.BAD_REQUEST, "error", e)
+        return {"users": []}, Statuses.BAD_REQUEST
+
+    house_id = data.get("HouseID")
+    user_id = user.data["UserID"]
+
+    try:
+        link = get_user_house_by_userID_houseID(user_id, house_id)
+        if not link or not link.data:
+            log_and_message_response("Access denied", Statuses.FORBIDDEN)
+            return {"users": []}, Statuses.FORBIDDEN
+    except Exception as e:
+        log_and_message_response("Access check failed", Statuses.BAD_REQUEST, "error", e)
+        return {"users": []}, Statuses.BAD_REQUEST
+
+    try:
+        response = get_users_assigned_to_house(house_id)
+        if not response:
+            log_and_message_response("Something went wrong with receiving data", Statuses.FORBIDDEN)
+            return {"users": []}, Statuses.FORBIDDEN
+        data = response.data or []
+    except Exception as e:
+        log_and_message_response("Failed to get house users", Statuses.BAD_REQUEST, "error", e)
+        return {"users": []}, Statuses.BAD_REQUEST
+
+    users = []
+    for row in data:
+        user_login = row.get("User", {}).get("UserLogin")
+        role = row.get("Role")
+        if user_login and role:
+            users.append({
+                "UserLogin": user_login,
+                "Role": role
+            })
+
+    return {"users": users}, Statuses.OK

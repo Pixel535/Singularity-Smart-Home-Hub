@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { MenubarModule } from 'primeng/menubar';
@@ -19,18 +19,16 @@ import { CommonModule } from '@angular/common';
     AvatarModule,
     TieredMenuModule,
     ButtonModule,
-    ChipModule,
+    ChipModule
   ]
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnChanges {
   @Input() houseName: string | null = null;
   @Input() isInsideHouse = false;
+  @Input() houseId: number | null = null;
   @Input() userLogin: string | null = null;
 
-  constructor(
-    private auth: AuthService,
-    private router: Router
-  ) { }
+  constructor(private auth: AuthService, private router: Router) {}
 
   menuItems = [
     {
@@ -45,13 +43,23 @@ export class HeaderComponent {
     }
   ];
 
-  houseMenuItems = [
-    {
-      label: 'House Info',
-      icon: 'pi pi-info-circle',
-      command: () => console.log('House Info clicked') // placeholer
-    }
-  ];
+  houseMenuItems: any[] = [];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.houseMenuItems =
+      this.isInsideHouse && this.houseId != null
+        ? [
+            {
+              label: 'House Info',
+              icon: 'pi pi-info-circle',
+              command: () =>
+                this.router.navigate(['/house/info'], {
+                  state: { houseId: this.houseId }
+                })
+            }
+          ]
+        : [];
+  }
 
   logout() {
     this.auth.logout();
@@ -60,5 +68,4 @@ export class HeaderComponent {
   goHome() {
     this.router.navigate(['/dashboard']);
   }
-
 }

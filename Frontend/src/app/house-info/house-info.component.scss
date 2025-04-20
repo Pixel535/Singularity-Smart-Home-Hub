@@ -1,0 +1,294 @@
+@use '../shared/variables.scss' as v;
+
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 3rem;
+  padding: 2rem;
+
+  .left,
+  .right,
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .left,
+  .right {
+    flex: 1;
+  }
+
+  .center {
+    width: 4px;
+  }
+
+  .form-card {
+    background-color: v.$card-color;
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 600px;
+    min-width: 500px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: v.$text-color;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+
+    h2 {
+      margin-bottom: 1.5rem;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+
+      label {
+        font-weight: 600;
+        font-size: 1.2rem;
+        display: block;
+        margin-bottom: 0.3rem;
+      }
+
+      span {
+        display: block;
+        font-size: 1rem;
+      }
+
+      input {
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        max-height: 3rem;
+        border: 1px solid v.$input-border-color;
+        color: v.$text-color-darker;
+        width: 100%;
+
+        &:focus {
+          outline: none;
+          border-color: v.$secondary-color;
+        }
+      }
+    }
+  }
+
+  .form-card-divider-vertical {
+    width: 4px;
+    height: 90%;
+    background-color: v.$secondary-color;
+    border-radius: 999px;
+  }
+
+  .profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .user-icon {
+      font-size: 2rem;
+      color: v.$text-color;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .divider {
+      height: 4px;
+      width: 20rem;
+      background-color: v.$secondary-color;
+      margin: 0 auto;
+      border-radius: 999px;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+
+    button {
+      padding: 0.75rem 2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .btn-edit {
+      background-color: v.$secondary-color !important;
+      color: v.$text-color !important;
+      border: none !important;
+
+      &:hover {
+        background-color: v.$hover-secondary-color !important;
+      }
+    }
+
+    .btn-delete {
+      border: 1px solid #999 !important;
+      color: v.$text-color !important;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+      }
+    }
+  }
+}
+
+.fullscreen-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: v.$text-color;
+  background: v.$background-color;
+}
+
+.country-dropdown {
+    width: 100%;
+  
+    .p-dropdown-panel {
+      max-height: 300px;
+    }
+  }
+  
+  .country-option {
+    display: flex;
+    align-items: center;
+  }
+  
+  .country-option .flag {
+    width: 20px;
+    margin-right: 0.5rem;
+    border-radius: 3px;
+  }
+
+  :host ::ng-deep .p-dropdown.p-focus {
+    border-color: v.$secondary-color;
+  }
+  
+  :host ::ng-deep .p-inputtext:enabled:focus {
+    border-color: v.$secondary-color;
+  }
+  
+  :host ::ng-deep .p-select-option.p-select-option-selected {
+    background-color: color-mix(in srgb, v.$secondary-color, transparent 50%) !important;
+    color: #fff !important;
+  }
+
+  :host ::ng-deep .p-dropdown-item:hover {
+    background-color: color-mix(in srgb, v.$secondary-color, white 10%);
+    color: white;
+  }
+
+  .invalid {
+    border: 2px solid v.$error-color !important;
+  }
+  
+  .error-message {
+    color: v.$error-color;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+  
+  .scroll-form-class {
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    max-height: 30rem;
+    overflow: scroll;
+    overflow-x: hidden;
+  }
+
+  .scroll-form-class::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scroll-form-class::-webkit-scrollbar-thumb {
+    background-color: v.$secondary-color;
+    border-radius: 3px;
+  }
+
+  .no-users {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    color: v.$text-color;
+    font-size: 1.1rem;
+    padding: 2rem;
+  }
+
+.user-row {
+  display: flex;
+  align-items: center;
+  color: v.$text-color;
+  font-size: 1.1rem;
+  font-weight: 500;
+
+  img.user-icon-img {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.7rem;
+    filter: brightness(0) invert(1);
+  }
+
+  span {
+    display: inline-block;
+  }
+}
+
+.users-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  max-height: 30rem;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.users-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+.users-scroll::-webkit-scrollbar-thumb {
+  background-color: v.$secondary-color;
+  border-radius: 3px;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: v.$text-color;
+
+  img.user-icon-img {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.7rem;
+    filter: brightness(0) invert(1);
+  }
+}
+
+.go-back {
+    padding-top: 2rem;
+    padding-left: 2rem;
+    position: absolute;
+}
+
+.back-arrow {
+    font-size: 1.8rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: v.$secondary-color;
+    }
+  }

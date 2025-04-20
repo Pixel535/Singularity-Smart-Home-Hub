@@ -50,6 +50,11 @@ export const routes: Routes = [
     canActivate: [canActivateAuth]
   },
   {
+    path: 'house/info',
+    loadComponent: () => import('./house-info/house-info.component').then((m) => m.HouseInfoComponent),
+    canActivate: [canActivateAuth]
+  },
+  {
     path: '**',
     redirectTo: ''
   }

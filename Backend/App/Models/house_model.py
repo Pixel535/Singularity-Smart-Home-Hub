@@ -58,3 +58,10 @@ def update_room(room_id, data):
 
 def delete_room(room_id):
     return Config.supabase.table("Room").delete().eq("RoomID", room_id).execute()
+
+
+def get_users_assigned_to_house(house_id):
+    try:
+        return Config.supabase.table("UserHouse").select("Role, User(UserLogin)").eq("HouseID", house_id).execute()
+    except Exception as e:
+        return log_and_message_response("Error while fetching users from house", Statuses.BAD_REQUEST, "error", e)

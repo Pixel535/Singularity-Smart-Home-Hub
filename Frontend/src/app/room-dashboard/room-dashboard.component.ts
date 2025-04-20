@@ -33,10 +33,15 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
   houseId!: number;
   houseName = '';
   roomId!: number;
-  roomName: string = '';
+  roomName = '';
+
   loading = true;
-  isLoaded = false;
-  baseUrl = 'http://localhost:5000/house/room';
+
+  get isLoaded(): boolean {
+    return !this.loading;
+  }
+
+  private baseUrl = 'http://localhost:5000/house/room';
 
   activeTab: 'devices' | 'functions' = 'devices';
 
@@ -51,17 +56,14 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
       this.roomId = state.roomId;
       this.houseId = state.houseId;
       this.loadRoomData();
+
       this.http.post<{ HouseName: string }>(
         'http://localhost:5000/house/getHouse',
         { HouseID: this.houseId },
         { withCredentials: true }
       ).subscribe({
-        next: (res) => {
-          this.houseName = res.HouseName;
-        },
-        error: () => {
-          this.houseName = '';
-        }
+        next: res => this.houseName = res.HouseName,
+        error: () => this.houseName = ''
       });
     } else {
       this.messageService.add({
@@ -71,7 +73,6 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
       });
       this.router.navigate(['/dashboard']);
     }
-
   }
 
   ngAfterViewInit(): void {
@@ -85,21 +86,19 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
   }
 
   updateIndicator() {
-    if (!this.tabItems || !this.tabItems.length) return;
+    if (!this.tabItems?.length) return;
 
     const index = this.activeTab === 'devices' ? 0 : 1;
     const tabEl = this.tabItems.get(index)?.nativeElement;
     if (tabEl) {
-      const left = tabEl.offsetLeft;
-      const width = tabEl.getBoundingClientRect().width;
       this.tabIndicatorStyle = {
-        left: `${left}px`,
-        width: `${width}px`
+        left: `${tabEl.offsetLeft}px`,
+        width: `${tabEl.getBoundingClientRect().width}px`
       };
     }
   }
 
-  private safeUpdateIndicator(): void {
+  private safeUpdateIndicator() {
     setTimeout(() => {
       this.updateIndicator();
       this.cdr.detectChanges();
@@ -107,14 +106,14 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
   }
 
   private loadRoomData() {
-    this.http.post<any>(`${this.baseUrl}/getRoom`, {
-      RoomID: this.roomId,
-      HouseID: this.houseId
-    }, { withCredentials: true }).subscribe({
-      next: (res) => {
+    this.http.post<{ RoomName: string }>(
+      `${this.baseUrl}/getRoom`,
+      { RoomID: this.roomId, HouseID: this.houseId },
+      { withCredentials: true }
+    ).subscribe({
+      next: res => {
         this.roomName = res.RoomName;
         this.loading = false;
-        this.isLoaded = true;
       },
       error: () => {
         this.messageService.add({

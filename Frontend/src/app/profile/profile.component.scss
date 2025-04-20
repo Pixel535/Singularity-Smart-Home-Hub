@@ -149,3 +149,30 @@
   color: v.$text-color;
   background: v.$background-color;
 }
+
+.invalid {
+  border: 2px solid v.$error-color !important;
+}
+
+.error-message {
+  color: v.$error-color;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+
+.scroll-form-class {
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  max-height: 30rem;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.scroll-form-class::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-form-class::-webkit-scrollbar-thumb {
+  background-color: v.$secondary-color;
+  border-radius: 3px;
+}

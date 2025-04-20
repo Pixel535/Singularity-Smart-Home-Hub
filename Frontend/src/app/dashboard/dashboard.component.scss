@@ -239,6 +239,10 @@
   color: #fff !important;
 }
 
+:host ::ng-deep .p-select-option:hover {
+  background-color: color-mix(in srgb, v.$secondary-color, white 10%);
+  color: white;
+}
 
 .fullscreen-loader {
   display: flex;

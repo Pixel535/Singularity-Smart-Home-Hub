@@ -1,0 +1,164 @@
+<app-header
+  *ngIf="!loading"
+  [houseName]="houseData?.HouseName"
+  [isInsideHouse]="true"
+  [houseId]="houseId">
+</app-header>
+
+<p-toast position="top-center"></p-toast>
+
+<app-confirm-dialog
+  [visible]="showDeleteConfirm"
+  [header]="'Delete House'"
+  [message]="'Are you sure you want to permanently delete this house?'"
+  (accept)="acceptDelete()"
+  (reject)="showDeleteConfirm = false"
+  (closed)="showDeleteConfirm = false"
+/>
+
+<div class="go-back" *ngIf="!loading">
+    <i class="pi pi-arrow-left back-arrow" (click)="goBackToHouseDashboard()" title="Back to House"></i>
+</div>
+
+
+<div *ngIf="loading" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
+
+<div class="profile-wrapper" *ngIf="!loading && houseData">
+    <div class="left">
+      <div class="form-card">
+        <div class="profile-header">
+          <i class="pi pi-home user-icon"></i>
+          <h2>{{ houseData?.HouseName }}</h2>
+          <div class="divider"></div>
+        </div>
+  
+        <form [formGroup]="houseForm" *ngIf="houseForm">
+            <div class="scroll-form-class" >
+                <div class="field">
+                    <label>House Name:</label>
+                    <ng-container *ngIf="isEditing; else showHouseName">
+                      <input type="text" pInputText formControlName="HouseName" [class.invalid]="isInvalid('HouseName')" />
+                      <div class="error-message" *ngIf="isInvalid('HouseName')">House name is required.</div>
+                    </ng-container>
+                    <ng-template #showHouseName>{{ houseData.HouseName }}</ng-template>
+                  </div>
+                
+                  <div class="field">
+                    <label>Country:</label>
+                    <ng-container *ngIf="isEditing; else showCountry">
+                      <p-dropdown
+                        inputId="Country"
+                        [options]="countries"
+                        optionLabel="name"
+                        formControlName="Country"
+                        class="country-dropdown"
+                        [class.invalid]="isInvalid('Country')"
+                        [filter]="true"
+                        placeholder="Select a country"
+                        [showClear]="true"
+                        [virtualScroll]="true"
+                        [itemSize]="35"
+                        [autoDisplayFirst]="false"
+                      >
+                        <ng-template let-country pTemplate="item">
+                          <div class="country-option">
+                            <img
+                              [src]="'https://flagcdn.com/w40/' + country.code.toLowerCase() + '.png'"
+                              class="flag"
+                              alt="{{ country.name }}"
+                            />
+                            {{ country.name }}
+                          </div>
+                        </ng-template>
+                      </p-dropdown>
+                      <div class="error-message" *ngIf="isInvalid('Country')">Country is required.</div>
+                    </ng-container>
+                    <ng-template #showCountry>{{ houseData.Country }}</ng-template>
+                  </div>
+                
+                  <div class="field">
+                    <label>City:</label>
+                    <ng-container *ngIf="isEditing; else showCity">
+                      <input type="text" pInputText formControlName="City" [class.invalid]="isInvalid('City')" />
+                      <div class="error-message" *ngIf="isInvalid('City')">City is required.</div>
+                    </ng-container>
+                    <ng-template #showCity>{{ houseData.City }}</ng-template>
+                  </div>
+                
+                  <div class="field">
+                    <label>Street Address:</label>
+                    <ng-container *ngIf="isEditing; else showAddress">
+                      <input type="text" pInputText formControlName="StreetAddress" [class.invalid]="isInvalid('StreetAddress')" />
+                      <div class="error-message" *ngIf="isInvalid('StreetAddress')">Address is required.</div>
+                    </ng-container>
+                    <ng-template #showAddress>{{ houseData.StreetAddress }}</ng-template>
+                  </div>
+                
+                  <div class="field">
+                    <label>Postal Code:</label>
+                    <ng-container *ngIf="isEditing; else showPostal">
+                      <input type="text" pInputText formControlName="PostalCode" [class.invalid]="isInvalid('PostalCode')" />
+                      <div class="error-message" *ngIf="isInvalid('PostalCode')">Postal code is required.</div>
+                    </ng-container>
+                    <ng-template #showPostal>{{ houseData.PostalCode }}</ng-template>
+                  </div>
+                
+                  <div class="field">
+                    <label>PIN:</label>
+                    <ng-container *ngIf="isEditing; else showPin">
+                      <input type="text" pInputText formControlName="PIN" [class.invalid]="isInvalid('PIN')" />
+                      <div class="error-message" *ngIf="isInvalid('PIN')">PIN must be exactly 6 digits.</div>
+                    </ng-container>
+                    <ng-template #showPin>{{ houseData.PIN }}</ng-template>
+                  </div>
+            </div>
+          
+            <div class="action-buttons" *ngIf="!isEditing">
+              <button pButton label="Edit" class="btn-edit" icon="pi pi-pencil" (click)="startEdit()"></button>
+              <button pButton label="Delete" class="btn-delete p-button-outlined" icon="pi pi-trash" (click)="deleteHouse()"></button>
+            </div>
+          
+            <div class="action-buttons" *ngIf="isEditing">
+              <button pButton label="Save" class="btn-edit" icon="pi pi-check" (click)="saveHouse()" [disabled]="houseForm.invalid"></button>
+              <button pButton label="Cancel" class="btn-delete p-button-outlined" icon="pi pi-times" type="button" (click)="cancelEdit()"></button>
+            </div>
+          </form>
+      </div>
+    </div>
+  
+    <div class="center">
+      <div class="form-card-divider-vertical"></div>
+    </div>
+  
+    <div class="right">
+      <div class="form-card">
+        <div class="profile-header">
+          <i class="pi pi-users user-icon"></i>
+          <h2>Members</h2>
+          <div class="divider"></div>
+        </div>
+  
+        <ng-container *ngIf="users?.length; else noUsers">
+          <div class="users-scroll">
+            <div class="user-row" *ngFor="let user of users">
+              <img src="assets/images/logo3_white.png" alt="user icon" class="user-icon-img" />
+              <span><strong>{{ user.UserLogin }}</strong>: {{ user.Role }}</span>
+            </div>
+          </div>
+        </ng-container>
+        
+        <ng-template #noUsers>
+          <div class="no-users">
+            No users assigned.
+          </div>
+        </ng-template>
+  
+        <div class="action-buttons">
+          <button pButton label="Manage Users" class="btn-edit" icon="pi pi-user-edit" (click)="goToManageUsers()"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

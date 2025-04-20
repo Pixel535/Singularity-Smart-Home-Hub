@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from Backend.App.Services.house_services import get_house_data, get_house_rooms, add_room, edit_room_data, remove_room
+from Backend.App.Services.house_services import get_house_data, get_house_rooms, add_room, edit_room_data, remove_room, \
+    get_users_from_house
 
 house_route = Blueprint("house", __name__)
 
@@ -46,4 +47,13 @@ def delete_room():
     user_login = get_jwt_identity()
     data = request.get_json()
     response, status = remove_room(user_login, data)
+    return jsonify(response), status
+
+
+@house_route.route("/getHouseUsers", methods=["POST"])
+@jwt_required(locations=["cookies"])
+def get_house_users():
+    user_login = get_jwt_identity()
+    data = request.get_json()
+    response, status = get_users_from_house(user_login, data)
     return jsonify(response), status

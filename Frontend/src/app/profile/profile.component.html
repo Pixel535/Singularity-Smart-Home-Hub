@@ -1,7 +1,4 @@
-<app-header
-  *ngIf="!loading"
-  [userLogin]="userLogin"
-></app-header>
+<app-header *ngIf="!loading" [userLogin]="userLogin"></app-header>
 
 <p-toast position="top-center"></p-toast>
 
@@ -19,9 +16,7 @@
 </div>
 
 <div class="profile-wrapper" *ngIf="!loading && userData">
-  <div *ngIf="loading" class="loading">Loading...</div>
-
-  <div *ngIf="!loading && userData" class="form-card">
+  <div class="form-card">
     <div class="profile-header">
       <i class="pi pi-user user-icon"></i>
       <h2>User Profile</h2>
@@ -29,54 +24,59 @@
     </div>
 
     <form [formGroup]="profileForm" *ngIf="profileForm">
-
-      <div class="field">
-        <label>Login:</label>
-        <span>{{ userData.UserLogin }}</span>
-      </div>
-
-      <div class="field">
-        <label>First Name:</label>
-        <ng-container *ngIf="isEditing; else showName">
-          <input type="text" pInputText formControlName="Name" />
-        </ng-container>
-        <ng-template #showName>{{ userData.Name }}</ng-template>
-      </div>
-
-      <div class="field">
-        <label>Last Name:</label>
-        <ng-container *ngIf="isEditing; else showSurname">
-          <input type="text" pInputText formControlName="Surname" />
-        </ng-container>
-        <ng-template #showSurname>{{ userData.Surname }}</ng-template>
-      </div>
-
-      <div class="field">
-        <label>Email:</label>
-        <ng-container *ngIf="isEditing; else showEmail">
-          <input type="email" pInputText formControlName="Mail" />
-        </ng-container>
-        <ng-template #showEmail>{{ userData.Mail }}</ng-template>
-      </div>
-
-      <div class="field">
-        <label>Phone:</label>
-        <ng-container *ngIf="isEditing; else showPhone">
-          <input type="text" pInputText formControlName="TelephoneNumber" />
-        </ng-container>
-        <ng-template #showPhone>{{ userData.TelephoneNumber }}</ng-template>
-      </div>
-
-      <div class="field password-field">
-        <label>Password:</label>
-        <span>**********</span>
-        <button
-          pButton
-          class="btn-password"
-          label="Change Password"
-          icon="pi pi-key"
-          (click)="onChangePassword()"
-        ></button>
+      <div class="scroll-form-class" >
+        <div class="field">
+          <label>Login:</label>
+          <span>{{ userData.UserLogin }}</span>
+        </div>
+  
+        <div class="field">
+          <label>First Name:</label>
+          <ng-container *ngIf="isEditing; else showName">
+            <input type="text" pInputText formControlName="Name" [class.invalid]="isInvalid('Name')" />
+            <div class="error-message" *ngIf="isInvalid('Name')">First name is required.</div>
+          </ng-container>
+          <ng-template #showName>{{ userData.Name }}</ng-template>
+        </div>
+  
+        <div class="field">
+          <label>Last Name:</label>
+          <ng-container *ngIf="isEditing; else showSurname">
+            <input type="text" pInputText formControlName="Surname" [class.invalid]="isInvalid('Surname')" />
+            <div class="error-message" *ngIf="isInvalid('Surname')">Last name is required.</div>
+          </ng-container>
+          <ng-template #showSurname>{{ userData.Surname }}</ng-template>
+        </div>
+  
+        <div class="field">
+          <label>Email:</label>
+          <ng-container *ngIf="isEditing; else showEmail">
+            <input type="email" pInputText formControlName="Mail" [class.invalid]="isInvalid('Mail')" />
+            <div class="error-message" *ngIf="isInvalid('Mail')">Valid email is required.</div>
+          </ng-container>
+          <ng-template #showEmail>{{ userData.Mail }}</ng-template>
+        </div>
+  
+        <div class="field">
+          <label>Phone:</label>
+          <ng-container *ngIf="isEditing; else showPhone">
+            <input type="text" pInputText formControlName="TelephoneNumber" [class.invalid]="isInvalid('TelephoneNumber')" />
+            <div class="error-message" *ngIf="isInvalid('TelephoneNumber')">Phone number is required.</div>
+          </ng-container>
+          <ng-template #showPhone>{{ userData.TelephoneNumber }}</ng-template>
+        </div>
+  
+        <div class="field password-field">
+          <label>Password:</label>
+          <span>**********</span>
+          <button
+            pButton
+            class="btn-password"
+            label="Change Password"
+            icon="pi pi-key"
+            (click)="onChangePassword()"
+          ></button>
+        </div>
       </div>
 
       <div class="action-buttons" *ngIf="!isEditing">
