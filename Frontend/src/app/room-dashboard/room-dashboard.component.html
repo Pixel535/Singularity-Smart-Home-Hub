@@ -1,0 +1,57 @@
+<p-toast position="top-center"></p-toast>
+
+<app-header 
+  *ngIf="isLoaded" 
+  [houseName]="houseName"
+  [isInsideHouse]="true" 
+/>
+
+<div *ngIf="!isLoaded" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
+
+<div class="room-dashboard" *ngIf="isLoaded">
+  <div class="dashboard-header">
+    <i class="pi pi-arrow-left back-arrow" (click)="goBackToHouseDashboard()" title="Back to House"></i>
+    <h2 class="title">{{ roomName }}</h2>
+  </div> 
+
+  <div class="tab-wrapper">
+    <div class="tabs">
+      <div
+        #tabItem
+        class="tab"
+        [class.active]="activeTab === 'devices'"
+        (click)="setTab('devices')"
+      >
+        Devices
+      </div>
+      <div
+        #tabItem
+        class="tab"
+        [class.active]="activeTab === 'functions'"
+        (click)="setTab('functions')"
+      >
+        Functions
+      </div>
+
+      <div
+        class="tab-slider"
+        [ngStyle]="{
+          left: tabIndicatorStyle.left,
+          width: tabIndicatorStyle.width
+        }"
+      ></div>
+    </div>
+  </div>
+
+  <div class="tab-content">
+    <div *ngIf="activeTab === 'devices'">
+      <p class="coming-soon">Functionality coming soon...</p>
+    </div>
+
+    <div *ngIf="activeTab === 'functions'">
+      <p class="coming-soon">Functionality coming soon...</p>
+    </div>
+  </div>
+</div>

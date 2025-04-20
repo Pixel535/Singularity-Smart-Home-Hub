@@ -23,10 +23,12 @@ def create_app():
     from Backend.App.Routes.dashboard_routes import dashboard_route
     from Backend.App.Routes.profile_routes import profile_route
     from Backend.App.Routes.house_routes import house_route
+    from Backend.App.Routes.room_routes import room_route
 
     app.register_blueprint(auth_route, url_prefix="/auth")
     app.register_blueprint(dashboard_route, url_prefix="/dashboard")
     app.register_blueprint(profile_route, url_prefix="/profile")
     app.register_blueprint(house_route, url_prefix="/house")
+    app.register_blueprint(room_route, url_prefix="/house/room")
 
     return app

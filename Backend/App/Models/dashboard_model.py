@@ -1,4 +1,5 @@
 from Backend.App import Config
+from Backend.App.Models.house_model import get_user_house_by_userID_houseID
 from Backend.App.Models.user_model import get_user_by_login
 from Backend.App.config import log_and_message_response, Statuses
 
@@ -29,7 +30,7 @@ def insert_user_house(user_login, house_data):
             return log_and_message_response("No user or House found", Statuses.NOT_FOUND, "error", None)
         user_id = user.data["UserID"]
     except Exception as e:
-        log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
 
     country = house_data.get("Country", {})
     house_data["Country"] = country.get("name", "")
@@ -61,7 +62,7 @@ def delete_user_house(user_login, house_data):
         user_id = user.data["UserID"]
         house_id = house_data.get("HouseID")
     except Exception as e:
-        log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
 
     if not house_id:
         return log_and_message_response("There is no such house", Statuses.NOT_FOUND, "error", None)
@@ -85,7 +86,7 @@ def update_user_house(user_login, house_data):
         user_id = user.data["UserID"]
         house_id = house_data.get("HouseID")
     except Exception as e:
-        log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
 
     if not house_id:
         return log_and_message_response("There is no such house", Statuses.NOT_FOUND, "error", None)
@@ -105,8 +106,3 @@ def update_user_house(user_login, house_data):
     except Exception as e:
         return log_and_message_response("House update failed", Statuses.BAD_REQUEST, "error", e)
 
-def get_user_house_by_userID_houseID(userID, houseID):
-    try:
-        return Config.supabase.table("UserHouse").select("*").eq("UserID", userID).eq("HouseID", houseID).maybe_single().execute()
-    except Exception as e:
-        return log_and_message_response("UserHouse getting failed", Statuses.BAD_REQUEST, "error", e)

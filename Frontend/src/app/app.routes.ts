@@ -40,8 +40,13 @@ export const routes: Routes = [
     canActivate: [canActivateAuth]
   },
   {
-    path: 'house/:houseId/dashboard',
+    path: 'house/dashboard',
     loadComponent: () => import('./house-dashboard/house-dashboard.component').then(m => m.HouseDashboardComponent),
+    canActivate: [canActivateAuth]
+  },
+  {
+    path: 'house/room/dashboard',
+    loadComponent: () => import('./room-dashboard/room-dashboard.component').then(m => m.RoomDashboardComponent),
     canActivate: [canActivateAuth]
   },
   {

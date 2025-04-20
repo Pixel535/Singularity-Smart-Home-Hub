@@ -1,5 +1,5 @@
 from Backend.App.Models.user_model import get_user_by_login
-from Backend.App.config import Statuses, log_and_message_response, Config
+from Backend.App.config import Config, Statuses, log_and_message_response
 
 
 def get_house_by_user_and_house_id(user_login, house_id):
@@ -9,7 +9,7 @@ def get_house_by_user_and_house_id(user_login, house_id):
             return log_and_message_response("User not found", Statuses.NOT_FOUND, "error")
         user_id = user.data["UserID"]
     except Exception as e:
-        log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
 
     try:
         user_house = Config.supabase.table("UserHouse").select("*").eq("UserID", user_id).eq("HouseID", house_id).maybe_single().execute()
@@ -25,3 +25,36 @@ def get_house_by_user_and_house_id(user_login, house_id):
         return house.data, Statuses.OK
     except Exception as e:
         return log_and_message_response("Fetching house failed", Statuses.BAD_REQUEST, "error", e)
+
+
+def get_user_house_by_userID_houseID(user_id, house_id):
+    try:
+        return Config.supabase.table("UserHouse").select("*").eq("UserID", user_id).eq("HouseID", house_id).maybe_single().execute()
+    except Exception as e:
+        return log_and_message_response("Failed to verify UserHouse link", Statuses.BAD_REQUEST, "error", e)
+
+
+def get_room_by_id(room_id):
+    try:
+        return Config.supabase.table("Room").select("*").eq("RoomID", room_id).maybe_single().execute()
+    except Exception as e:
+        return log_and_message_response("Failed to fetch room", Statuses.BAD_REQUEST, "error", e)
+
+
+def get_rooms_by_house_id(house_id):
+    try:
+        return Config.supabase.table("Room").select("*").eq("HouseID", house_id).execute()
+    except Exception as e:
+        return log_and_message_response("Failed to fetch rooms", Statuses.BAD_REQUEST, "error", e)
+
+
+def insert_room(room_data):
+    return Config.supabase.table("Room").insert(room_data).execute()
+
+
+def update_room(room_id, data):
+    return Config.supabase.table("Room").update(data).eq("RoomID", room_id).execute()
+
+
+def delete_room(room_id):
+    return Config.supabase.table("Room").delete().eq("RoomID", room_id).execute()

@@ -210,4 +210,11 @@ export class DashboardComponent implements OnInit {
   goToManageUsers(houseId: number) {
     this.router.navigate([`${this.baseUrl}/manageUsers`, houseId]);
   }
+
+  goToHouseDashboard(houseId: number) {
+    this.router.navigate(['/house/dashboard'], {
+      state: { houseId }
+    });
+  }
+  
 }

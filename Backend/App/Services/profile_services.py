@@ -9,7 +9,7 @@ def get_user_profile(user_login):
         if not user:
             return log_and_message_response("User not found", Statuses.NOT_FOUND, "error")
     except Exception as e:
-        log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
 
     user_data = {k: v for k, v in user.data.items() if k != "Password"}
     return {"user": user_data}, Statuses.OK
@@ -20,7 +20,7 @@ def update_user_profile(user_login, new_data):
         if not user:
             return log_and_message_response("User not found", Statuses.NOT_FOUND, "error")
     except Exception as e:
-        log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
 
     try:
         update_user(user.data["UserID"], new_data)
@@ -34,7 +34,7 @@ def delete_user_account(user_login):
         if not user:
             return log_and_message_response("User not found", Statuses.NOT_FOUND, "error")
     except Exception as e:
-        log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
 
     try:
         delete_user(user.data["UserID"])
@@ -49,7 +49,7 @@ def change_user_password(user_login, data):
         if not user:
             return log_and_message_response("User not found", Statuses.NOT_FOUND, "error")
     except Exception as e:
-        log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
 
     current = data.get("CurrentPassword")
     new = data.get("NewPassword")

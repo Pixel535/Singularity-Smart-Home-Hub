@@ -1,57 +1,250 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, AfterViewInit, ViewChildren, ElementRef, QueryList, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TabViewModule } from 'primeng/tabview';
-import { ButtonModule } from 'primeng/button';
-import { MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
+import { Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HeaderComponent } from '../shared/header/header.component';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
+import { AuthService } from '../auth/auth.service';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { AvatarModule } from 'primeng/avatar';
+import { TieredMenuModule } from 'primeng/tieredmenu';
+import { MenubarModule } from 'primeng/menubar';
+import { ChipModule } from 'primeng/chip';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-house-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    TabViewModule,
-    ButtonModule,
-    ToastModule,
-    HeaderComponent
-  ],
   templateUrl: './house-dashboard.component.html',
   styleUrls: ['./house-dashboard.component.scss'],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    InputTextModule,
+    ToastModule,
+    HeaderComponent,
+    ConfirmDialogComponent,
+    MenubarModule,
+    AvatarModule,
+    TieredMenuModule,
+    ChipModule,
+    TooltipModule
+  ],
   providers: [MessageService]
 })
-export class HouseDashboardComponent implements OnInit {
-  private route = inject(ActivatedRoute);
+export class HouseDashboardComponent implements OnInit, AfterViewInit {
+  private router = inject(Router);
+  private route = inject(Router);
   private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
+  private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
   private messageService = inject(MessageService);
 
   houseId!: number;
-  houseName: string = '';
+  houseName = '';
   loading = true;
-  isLoaded = false;
-
+  isEditing = false;
+  editingRoomId: number | null = null;
+  
   rooms: any[] = [];
   devices: any[] = [];
 
+  showAddForm = false;
+  addRoomForm!: FormGroup;
+
+  activeTab: 'rooms' | 'devices' | 'functions' = 'rooms';
+  showDeleteConfirm = false;
+  selectedRoomToDelete: any = null;
+
+  baseUrl = 'http://localhost:5000/house';
+
+  @ViewChildren('tabItem') tabItems!: QueryList<ElementRef>;
+  tabIndicatorStyle = {
+    left: '0px',
+    width: '0px'
+  };
+
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('houseId');
-      if (id) {
-        this.houseId = +id;
-        this.loadHouseData();
+    this.auth.startIdleWatch();
+
+    const state = history.state;
+    if (state && state.houseId) {
+      this.houseId = state.houseId;
+      this.loadHouseData();
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Missing Data',
+        detail: 'No house ID was provided. Redirecting to dashboard...'
+      });
+      this.router.navigate(['/dashboard']);
+    }
+
+    this.addRoomForm = this.fb.group({
+      RoomName: ['', Validators.required]
+    });
+  }
+
+  toggleEditForm(room: any) {
+    this.showAddForm = true;
+    this.isEditing = true;
+    this.editingRoomId = room.RoomID;
+    this.addRoomForm.patchValue({ RoomName: room.RoomName });
+  }
+  
+  closeForm(event: MouseEvent) {
+    if ((event.target as HTMLElement).classList.contains('overlay')) {
+      this.toggleAddForm();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.tabItems.changes.subscribe(() => this.safeUpdateIndicator());
+    setTimeout(() => this.safeUpdateIndicator());
+  }
+
+  private safeUpdateIndicator(): void {
+    setTimeout(() => {
+      this.updateIndicator();
+      this.cdr.detectChanges();
+    });
+  }
+
+  setTab(tab: 'rooms' | 'devices' | 'functions') {
+    this.activeTab = tab;
+    this.updateIndicator();
+  }
+
+  updateIndicator() {
+    if (!this.tabItems || !this.tabItems.length) return;
+
+    const indexMap = {
+      'rooms': 0,
+      'devices': 1,
+      'functions': 2
+    };
+
+    const index = indexMap[this.activeTab];
+    const tabEl = this.tabItems.get(index)?.nativeElement;
+    if (tabEl) {
+      const left = tabEl.offsetLeft;
+      const width = tabEl.getBoundingClientRect().width;
+      this.tabIndicatorStyle = {
+        left: `${left}px`,
+        width: `${width}px`
+      };
+    }
+  }
+
+  toggleAddForm() {
+    this.showAddForm = !this.showAddForm;
+    if (!this.showAddForm) this.addRoomForm.reset();
+  }
+
+  isInvalid(fieldName: string): boolean {
+    const control = this.addRoomForm.get(fieldName);
+    return !!control && control.invalid && control.touched;
+  }
+
+  submitAddRoom() {
+    if (this.addRoomForm.invalid) return;
+  
+    const payload = {
+      HouseID: this.houseId,
+      RoomName: this.addRoomForm.value.RoomName
+    };
+  
+    const endpoint = this.isEditing
+      ? `${this.baseUrl}/editRoom`
+      : `${this.baseUrl}/addRoom`;
+  
+    const body = this.isEditing
+      ? { ...payload, RoomID: this.editingRoomId }
+      : payload;
+  
+    const request = this.isEditing
+      ? this.http.put(endpoint, body, { withCredentials: true })
+      : this.http.post(endpoint, body, { withCredentials: true });
+  
+    request.subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: this.isEditing ? 'Room Updated' : 'Room Added',
+          detail: this.isEditing
+            ? 'Room updated successfully.'
+            : 'Room added successfully.'
+        });
+        this.toggleAddForm();
+        this.loadRooms();
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.isEditing
+            ? 'Failed to update room.'
+            : 'Failed to add room.'
+        });
       }
     });
   }
 
+  confirmDeleteRoom(room: any) {
+    this.selectedRoomToDelete = room;
+    this.showDeleteConfirm = true;
+  }
+
+  acceptDeleteRoom() {
+    if (!this.selectedRoomToDelete) return;
+  
+    this.http.request('delete', `${this.baseUrl}/removeRoom`, {
+      body: {
+        RoomID: this.selectedRoomToDelete.RoomID,
+        HouseID: this.houseId
+      },
+      withCredentials: true
+    }).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Deleted',
+          detail: 'Room has been removed.'
+        });
+        this.loadRooms();
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to delete room.'
+        });
+      },
+      complete: () => {
+        this.showDeleteConfirm = false;
+        this.selectedRoomToDelete = null;
+      }
+    });
+  }
+
+  cancelDeleteRoom() {
+    this.showDeleteConfirm = false;
+    this.selectedRoomToDelete = null;
+  }
+
   loadHouseData() {
-    this.http.get<any>(`http://localhost:5000/house/${this.houseId}`, { withCredentials: true })
+    this.http.post<any>(`${this.baseUrl}/getHouse`, { HouseID: this.houseId }, { withCredentials: true })
       .subscribe({
         next: (res) => {
           this.houseName = res.HouseName;
-          this.loading = false;
-          this.isLoaded = true;
+          this.loadRooms();
         },
         error: () => {
           this.messageService.add({
@@ -59,8 +252,36 @@ export class HouseDashboardComponent implements OnInit {
             summary: 'Error',
             detail: 'Failed to load house data'
           });
+        }
+      });
+  }
+
+  loadRooms() {
+    this.http.post<{ rooms: any[] }>(`${this.baseUrl}/getRooms`, { HouseID: this.houseId }, { withCredentials: true })
+      .subscribe({
+        next: (res) => {
+          this.rooms = res.rooms;
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load rooms'
+          });
+        },
+        complete: () => {
           this.loading = false;
         }
       });
   }
+
+  goToRoom(roomId: number) {
+    this.router.navigate(['/house/room/dashboard'], {
+      state: {
+        roomId,
+        houseId: this.houseId
+      }
+    });
+  }
+
 }
