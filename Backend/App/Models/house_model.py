@@ -22,8 +22,10 @@ def get_house_by_user_and_house_id(user_login, house_id):
         house = Config.supabase.table("House").select("*").eq("HouseID", house_id).maybe_single().execute()
         if not house or not house.data:
             return log_and_message_response("House not found", Statuses.NOT_FOUND, "error", None)
-        result = house.data
+
+        result = {k: v for k, v in house.data.items() if k != "PIN"}
         result["Role"] = user_house.data["Role"]
+
         return result, Statuses.OK
     except Exception as e:
         return log_and_message_response("Fetching house failed", Statuses.BAD_REQUEST, "error", e)
@@ -68,11 +70,29 @@ def get_users_assigned_to_house(house_id):
     except Exception as e:
         return log_and_message_response("Error while fetching users from house", Statuses.BAD_REQUEST, "error", e)
 
+
 def insert_user_into_house(data):
     return Config.supabase.table("UserHouse").insert(data).execute()
+
 
 def update_user_role_in_house(house_id, user_id, role):
     return Config.supabase.table("UserHouse").update({"Role": role}).eq("HouseID", house_id).eq("UserID", user_id).execute()
 
+
 def delete_user_from_house(house_id, user_id):
     return Config.supabase.table("UserHouse").delete().eq("HouseID", house_id).eq("UserID", user_id).execute()
+
+
+def get_house_pin_by_id(house_id):
+    try:
+        return Config.supabase.table("House").select("PIN").eq("HouseID", house_id).maybe_single().execute()
+    except Exception as e:
+        return log_and_message_response("Failed to get PIN", Statuses.BAD_REQUEST, "error", e)
+
+
+def update_house_pin(house_id, hashed_pin):
+    try:
+        return Config.supabase.table("House").update({"PIN": hashed_pin}).eq("HouseID", house_id).execute()
+    except Exception as e:
+        return log_and_message_response("Failed to update PIN", Statuses.BAD_REQUEST, "error", e)
+

@@ -59,6 +59,7 @@ export class DashboardComponent implements OnInit {
   editingHouseId: number | null = null;
   showDeleteConfirm = false;
   selectedHouseToDelete: any = null;
+  showPin = false;
 
   addHouseForm!: FormGroup;
 
@@ -111,6 +112,7 @@ export class DashboardComponent implements OnInit {
     if (this.showAddForm && house) {
       this.isEditing = true;
       this.editingHouseId = house.HouseID;
+  
       const selectedCountry = this.countries.find(c => c.code === house.CountryCode);
       this.addHouseForm.patchValue({
         HouseName: house.HouseName,
@@ -118,12 +120,22 @@ export class DashboardComponent implements OnInit {
         City: house.City,
         StreetAddress: house.StreetAddress,
         PostalCode: house.PostalCode,
-        PIN: house.PIN
+        PIN: '******'
       });
+  
+      this.addHouseForm.get('PIN')?.clearValidators();
+      this.addHouseForm.get('PIN')?.updateValueAndValidity();
+  
     } else {
       this.isEditing = false;
       this.editingHouseId = null;
       this.addHouseForm.reset();
+  
+      this.addHouseForm.get('PIN')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^\d{6}$/)
+      ]);
+      this.addHouseForm.get('PIN')?.updateValueAndValidity();
     }
   }
   
@@ -138,6 +150,10 @@ export class DashboardComponent implements OnInit {
     if (this.addHouseForm.invalid) return;
   
     const payload = this.addHouseForm.value;
+
+    if (this.isEditing) {
+      delete payload.PIN;
+    }
   
     const endpoint = this.isEditing
       ? `${this.baseUrl}/editHouse`
@@ -230,4 +246,15 @@ export class DashboardComponent implements OnInit {
     });
   }
   
+  goToChangePin() {
+    if (this.editingHouseId) {
+      this.router.navigate(['/house/changePin'], {
+        state: {
+          houseId: this.editingHouseId,
+          from: 'dashboard'
+        }
+      });
+    }
+  }
+
 }

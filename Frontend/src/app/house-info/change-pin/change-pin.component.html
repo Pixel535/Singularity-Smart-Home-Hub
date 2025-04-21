@@ -1,0 +1,76 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="change-password-wrapper">
+  <div class="form-card wide">
+    <h2 class="title">Change House PIN</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field password-field">
+        <label for="CurrentPIN">Current PIN</label>
+        <div class="input-icon-wrapper">
+          <input
+            [type]="showCurrent ? 'text' : 'password'"
+            pInputText
+            id="CurrentPIN"
+            formControlName="CurrentPIN"
+            [class.invalid]="form.get('CurrentPIN')?.invalid && form.get('CurrentPIN')?.touched"
+          />
+          <i class="pi"
+             [ngClass]="showCurrent ? 'pi-eye' : 'pi-eye-slash'"
+             (click)="showCurrent = !showCurrent"></i>
+        </div>
+        <small *ngIf="form.get('CurrentPIN')?.invalid && form.get('CurrentPIN')?.touched" class="error-message">
+          Must be 6 digits.
+        </small>
+      </div>
+
+      <div class="field password-field">
+        <label for="NewPIN">New PIN</label>
+        <div class="input-icon-wrapper">
+          <input
+            [type]="showNew ? 'text' : 'password'"
+            pInputText
+            id="NewPIN"
+            formControlName="NewPIN"
+            [class.invalid]="form.get('NewPIN')?.invalid && form.get('NewPIN')?.touched"
+          />
+          <i class="pi"
+             [ngClass]="showNew ? 'pi-eye' : 'pi-eye-slash'"
+             (click)="showNew = !showNew"></i>
+        </div>
+        <small *ngIf="form.get('NewPIN')?.invalid && form.get('NewPIN')?.touched" class="error-message">
+          Must be 6 digits.
+        </small>
+      </div>
+
+      <div class="field password-field">
+        <label for="ConfirmPIN">Confirm New PIN</label>
+        <div class="input-icon-wrapper">
+          <input
+            [type]="showConfirm ? 'text' : 'password'"
+            pInputText
+            id="ConfirmPIN"
+            formControlName="ConfirmPIN"
+            [class.invalid]="(
+              form.get('ConfirmPIN')?.invalid && form.get('ConfirmPIN')?.touched
+            ) || (form.errors?.['pinMismatch'] && form.get('ConfirmPIN')?.touched)"
+          />
+          <i class="pi"
+             [ngClass]="showConfirm ? 'pi-eye' : 'pi-eye-slash'"
+             (click)="showConfirm = !showConfirm"></i>
+        </div>
+        <small *ngIf="form.get('ConfirmPIN')?.invalid && form.get('ConfirmPIN')?.touched" class="error-message">
+          Confirmation required.
+        </small>
+        <small *ngIf="form.errors?.['pinMismatch'] && form.get('ConfirmPIN')?.touched" class="error-message">
+          PINs do not match.
+        </small>
+      </div>
+
+      <div class="action-buttons">
+        <button pButton label="Save" icon="pi pi-check" class="btn-edit" [disabled]="form.invalid || isSubmitting"></button>
+        <button pButton label="Cancel" icon="pi pi-times" class="btn-delete p-button-outlined" type="button" (click)="cancel()"></button>
+      </div>
+    </form>
+  </div>
+</div>

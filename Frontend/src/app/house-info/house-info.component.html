@@ -107,11 +107,17 @@
                 
                   <div class="field">
                     <label>PIN:</label>
-                    <ng-container *ngIf="isEditing; else showPin">
-                      <input type="text" pInputText formControlName="PIN" [class.invalid]="isInvalid('PIN')" />
-                      <div class="error-message" *ngIf="isInvalid('PIN')">PIN must be exactly 6 digits.</div>
-                    </ng-container>
-                    <ng-template #showPin>{{ houseData.PIN }}</ng-template>
+                    <div class="pin-static-row">
+                      <span>******</span>
+                      <button
+                        pButton
+                        *ngIf="isOwner()"
+                        class="btn-pin"
+                        label="Change PIN"
+                        icon="pi pi-key"
+                        type="button"
+                        (click)="goToChangePin()"></button>
+                    </div>
                   </div>
             </div>
           

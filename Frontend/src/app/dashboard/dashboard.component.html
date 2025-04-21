@@ -143,20 +143,40 @@
       </div>
 
       <div class="field">
-        <label for="PIN">
-          PIN
-          <i
-            class="pi pi-info-circle"
-            pTooltip="PIN is a 6-digit code used to log in directly to this house."
-            tooltipPosition="top"
-            style="margin-left: 0.5rem; cursor: pointer;"
-          ></i>
-        </label>
-        <input id="PIN" type="text" pInputText formControlName="PIN" [class.invalid]="isInvalid('PIN')" />
-        <small *ngIf="isInvalid('PIN')" class="error-message">
-          <ng-container *ngIf="addHouseForm.get('PIN')?.errors?.['required']">PIN is required.</ng-container>
-          <ng-container *ngIf="addHouseForm.get('PIN')?.errors?.['pattern']">PIN must be exactly 6 digits.</ng-container>
-        </small>
+        <label for="PIN">PIN</label>
+      
+        <ng-container *ngIf="isEditing; else showPinInput">
+          <div class="pin-static-row">
+            <span>******</span>
+            <button
+              pButton
+              class="btn-pin"
+              label="Change PIN"
+              icon="pi pi-key"
+              type="button"
+              (click)="goToChangePin()"></button>
+          </div>
+        </ng-container>
+      
+        <ng-template #showPinInput>
+          <div class="input-icon-wrapper">
+            <input
+              id="PIN"
+              [type]="showPin ? 'text' : 'password'"
+              pInputText
+              formControlName="PIN"
+              [class.invalid]="isInvalid('PIN')" />
+            <i class="pi"
+               [ngClass]="showPin ? 'pi-eye' : 'pi-eye-slash'"
+               (click)="showPin = !showPin"
+               style="cursor: pointer;"></i>
+          </div>
+      
+          <small *ngIf="isInvalid('PIN')" class="error-message">
+            <ng-container *ngIf="addHouseForm.get('PIN')?.errors?.['required']">PIN is required.</ng-container>
+            <ng-container *ngIf="addHouseForm.get('PIN')?.errors?.['pattern']">PIN must be exactly 6 digits.</ng-container>
+          </small>
+        </ng-template>
       </div>
 
       <button

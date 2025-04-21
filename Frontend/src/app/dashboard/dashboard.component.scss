@@ -252,3 +252,46 @@
   color: v.$text-color;
   background: v.$background-color;
 }
+
+
+.pin-static-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  span {
+    font-weight: bold;
+    font-size: 1.1rem;
+    flex-grow: 1;
+  }
+}
+
+.btn-pin {
+    background-color: v.$secondary-color;
+    border-color: v.$secondary-color !important;
+    color: v.$text-color;
+
+    &:hover {
+      background-color: v.$hover-secondary-color !important;
+      color: v.$text-color;
+    }
+}
+
+.input-icon-wrapper {
+  position: relative;
+  
+  input {
+    width: 100%;
+    padding-right: 2.5rem;
+  }
+
+  .pi {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1rem;
+    color: #ccc;
+  }
+}

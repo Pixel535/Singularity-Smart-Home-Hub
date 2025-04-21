@@ -1,6 +1,8 @@
+from werkzeug.security import check_password_hash, generate_password_hash
+
 from Backend.App.Models.house_model import get_house_by_user_and_house_id, get_user_house_by_userID_houseID, \
     get_rooms_by_house_id, insert_room, get_room_by_id, update_room, delete_room, get_users_assigned_to_house, \
-    delete_user_from_house, update_user_role_in_house, insert_user_into_house
+    delete_user_from_house, update_user_role_in_house, insert_user_into_house, get_house_pin_by_id, update_house_pin
 from Backend.App.Models.user_model import get_user_by_login, search_users_by_login_or_mail
 from Backend.App.config import log_and_message_response, Statuses
 
@@ -354,3 +356,50 @@ def remove_user_from_house_service(user_login, data):
         return {"msg": "User removed"}, Statuses.OK
     except Exception as e:
         return log_and_message_response("Failed to remove user", Statuses.BAD_REQUEST, "error", e)
+
+
+def change_house_pin_service(user_login, data):
+    house_id = data.get("HouseID")
+    current_pin = str(data.get("CurrentPIN", ""))
+    new_pin = str(data.get("NewPIN", ""))
+    confirm_pin = str(data.get("ConfirmPIN", ""))
+
+    if not house_id or not current_pin or not new_pin or not confirm_pin:
+        return log_and_message_response("Missing data", Statuses.BAD_REQUEST)
+
+    if new_pin != confirm_pin:
+        return log_and_message_response("PINs do not match", Statuses.BAD_REQUEST)
+
+    if not new_pin.isdigit() or len(new_pin) != 6:
+        return log_and_message_response("PIN must be 6 digits", Statuses.BAD_REQUEST)
+
+    try:
+        user = get_user_by_login(user_login)
+        if not user:
+            return log_and_message_response("User not found", Statuses.NOT_FOUND)
+        user_id = user.data["UserID"]
+    except Exception as e:
+        return log_and_message_response("Error fetching user", Statuses.BAD_REQUEST, "error", e)
+
+    try:
+        link = get_user_house_by_userID_houseID(user_id, house_id)
+        if not link or not link.data or link.data["Role"] != "Owner":
+            return log_and_message_response("Only owner can change PIN", Statuses.FORBIDDEN)
+    except Exception as e:
+        return log_and_message_response("Access check failed", Statuses.BAD_REQUEST, "error", e)
+
+    try:
+        house = get_house_pin_by_id(house_id)
+        if not house or not house.data:
+            return log_and_message_response("House not found", Statuses.NOT_FOUND)
+        if not check_password_hash(house.data["PIN"], current_pin):
+            return log_and_message_response("Current PIN incorrect", Statuses.UNAUTHORIZED)
+    except Exception as e:
+        return log_and_message_response("Error validating current PIN", Statuses.BAD_REQUEST, "error", e)
+
+    try:
+        hashed_pin = generate_password_hash(new_pin)
+        update_house_pin(house_id, hashed_pin)
+        return log_and_message_response("PIN updated successfully", Statuses.OK, "success")
+    except Exception as e:
+        return log_and_message_response("Failed to update PIN", Statuses.BAD_REQUEST, "error", e)

@@ -154,6 +154,8 @@ export class HouseInfoComponent implements OnInit {
       ...this.houseForm.value
     };
 
+    delete payload.PIN;
+
     this.http.put(`${this.dashBase}/editHouse`, payload, {
       withCredentials: true
     }).subscribe({
@@ -234,4 +236,14 @@ export class HouseInfoComponent implements OnInit {
       state: { houseId: this.houseId }
     });
   }
+
+  goToChangePin() {
+    this.router.navigate(['/house/changePin'], {
+      state: {
+        houseId: this.houseId,
+        from: 'info'
+      }
+    });
+  }
+  
 }

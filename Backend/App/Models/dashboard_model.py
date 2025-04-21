@@ -1,3 +1,5 @@
+from werkzeug.security import generate_password_hash
+
 from Backend.App import Config
 from Backend.App.Models.house_model import get_user_house_by_userID_houseID
 from Backend.App.Models.user_model import get_user_by_login
@@ -22,10 +24,11 @@ def get_houses_by_user_login(user_login):
 
     return [
         {
-            **row["House"],
+            **{k: v for k, v in row["House"].items() if k != "PIN"},
             "Role": row.get("Role")
         }
-        for row in response.data]
+        for row in response.data
+    ]
 
 
 def insert_user_house(user_login, house_data):
@@ -40,6 +43,12 @@ def insert_user_house(user_login, house_data):
     country = house_data.get("Country", {})
     house_data["Country"] = country.get("name", "")
     house_data["CountryCode"] = country.get("code", "")
+
+    pin = house_data.get("PIN")
+    if not pin or not str(pin).isdigit() or len(str(pin)) != 6:
+        return log_and_message_response("PIN must be a 6-digit number", Statuses.BAD_REQUEST)
+
+    house_data["PIN"] = generate_password_hash(str(pin))
 
     try:
         house_insert = Config.supabase.table("House").insert(house_data).execute()
@@ -78,7 +87,8 @@ def delete_user_house(user_login, house_data):
         return log_and_message_response("UserHouse not found or User is not Owner", Statuses.NOT_FOUND, "error", None)
 
     try:
-        return Config.supabase.table("House").delete().eq("HouseID", house_id).execute()
+        Config.supabase.table("House").delete().eq("HouseID", house_id).execute()
+        return log_and_message_response("House deleted", Statuses.OK, "success")
     except Exception as e:
         return log_and_message_response("House deletion failed", Statuses.BAD_REQUEST, "error", e)
 
@@ -110,4 +120,3 @@ def update_user_house(user_login, house_data):
         return log_and_message_response("House updated successfully", Statuses.OK, "success", None)
     except Exception as e:
         return log_and_message_response("House update failed", Statuses.BAD_REQUEST, "error", e)
-

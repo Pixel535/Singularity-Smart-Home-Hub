@@ -49,6 +49,11 @@ export const routes: Routes = [
     canActivate: [canActivateAuth]
   },
   {
+    path: 'house/changePin',
+    loadComponent: () => import('./house-info/change-pin/change-pin.component').then(m => m.ChangeHousePinComponent),
+    canActivate: [canActivateAuth]
+  },
+  {
     path: 'house/manageUsers',
     loadComponent: () =>
       import('./manage-users/manage-users.component').then(m => m.ManageUsersComponent),
