@@ -59,11 +59,12 @@ onSubmit() {
           this.auth.isLoggedIn$.next(true);
           this.router.navigate(['/dashboard']);
         },
-        error: () => {
+        error: err => {
+          const detail = err?.error?.msg || 'Could not verify login session';
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Could not verify login session'
+            detail
           });
           this.loading = false;
         }

@@ -115,12 +115,12 @@
                   </div>
             </div>
           
-            <div class="action-buttons" *ngIf="!isEditing">
+            <div class="action-buttons" *ngIf="!isEditing && isOwner()">
               <button pButton label="Edit" class="btn-edit" icon="pi pi-pencil" (click)="startEdit()"></button>
               <button pButton label="Delete" class="btn-delete p-button-outlined" icon="pi pi-trash" (click)="deleteHouse()"></button>
             </div>
           
-            <div class="action-buttons" *ngIf="isEditing">
+            <div class="action-buttons" *ngIf="isEditing && isOwner()">
               <button pButton label="Save" class="btn-edit" icon="pi pi-check" (click)="saveHouse()" [disabled]="houseForm.invalid"></button>
               <button pButton label="Cancel" class="btn-delete p-button-outlined" icon="pi pi-times" type="button" (click)="cancelEdit()"></button>
             </div>
@@ -155,8 +155,8 @@
           </div>
         </ng-template>
   
-        <div class="action-buttons">
-          <button pButton label="Manage Users" class="btn-edit" icon="pi pi-user-edit" (click)="goToManageUsers()"></button>
+        <div class="action-buttons" *ngIf="isOwner()">
+          <button pButton label="Manage Users" class="btn-edit" icon="pi pi-user-edit" (click)="goToManageUsers(houseId)"></button>
         </div>
       </div>
     </div>

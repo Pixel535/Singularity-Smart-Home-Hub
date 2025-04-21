@@ -53,7 +53,7 @@ export class HouseInfoComponent implements OnInit {
   houseId!: number;
   houseData: any = null;
   users: any[] = [];
-
+  userRole: string = '';
   loading = true;
   isEditing = false;
   showDeleteConfirm = false;
@@ -76,45 +76,51 @@ export class HouseInfoComponent implements OnInit {
     }
     this.houseId = state.houseId;
 
-    this.loadHouse();
-    this.loadUsers();
+    Promise.all([this.loadHouse(), this.loadUsers()]).then(() => {
+      this.loading = false;
+    });
   }
 
-  private loadHouse() {
-    this.http
-      .post<any>(
-        `${this.houseBase}/getHouse`,
-        { HouseID: this.houseId },
-        { withCredentials: true }
-      )
-      .subscribe({
-        next: (res) => {
-          this.houseData = res;
-          this.initForm();
-          this.loading = false;
-        },
-        error: () => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to fetch house data.'
-          });
-          this.router.navigate(['/dashboard']);
-        }
-      });
+  isOwner(): boolean {
+    return this.userRole === 'Owner';
   }
 
-  private loadUsers() {
-    this.http
-      .post<{ users: any[] }>(
-        `${this.houseBase}/getHouseUsers`,
-        { HouseID: this.houseId },
-        { withCredentials: true }
-      )
-      .subscribe({
-        next: (res) => (this.users = res.users),
-        error: () => (this.users = [])
-      });
+  private loadHouse(): Promise<void> {
+    return new Promise((resolve) => {
+      this.http
+        .post<any>(`${this.houseBase}/getHouse`, { HouseID: this.houseId }, { withCredentials: true })
+        .subscribe({
+          next: (res) => {
+            this.houseData = res;
+            this.userRole = res.Role;
+            this.initForm();
+            resolve();
+          },
+          error: (err) => {
+            const detail = err?.error?.msg || 'Failed to fetch house data';
+            this.messageService.add({ severity: 'error', summary: 'Error', detail });
+            this.router.navigate(['/dashboard']);
+            resolve();
+          }
+        });
+    });
+  }
+  
+  private loadUsers(): Promise<void> {
+    return new Promise((resolve) => {
+      this.http
+        .post<{ users: any[] }>(`${this.houseBase}/getHouseUsers`, { HouseID: this.houseId }, { withCredentials: true })
+        .subscribe({
+          next: (res) => {
+            this.users = res.users;
+            resolve();
+          },
+          error: () => {
+            this.users = [];
+            resolve();
+          }
+        });
+    });
   }
 
   initForm() {
@@ -197,17 +203,25 @@ export class HouseInfoComponent implements OnInit {
           });
           this.router.navigate(['/dashboard']);
         },
-        error: () =>
+        error: err => {
+          const detail = err?.error?.msg || 'Failed to delete house';
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Failed to delete house.'
-          })
+            detail
+          });
+        }
       });
   }
 
-  goToManageUsers() {
-    this.router.navigate(['/dashboard/manageUsers', this.houseId]);
+  goToManageUsers(houseId: number) {
+    this.router.navigate(['/house/manageUsers'], {
+      state: {
+        houseId,
+        houseName: this.houseData?.HouseName,
+        from: 'info'
+      }
+    });
   }
 
   isInvalid(fieldName: string): boolean {

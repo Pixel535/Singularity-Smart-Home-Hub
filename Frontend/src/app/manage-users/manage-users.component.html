@@ -1,0 +1,138 @@
+<app-header
+  *ngIf="!loading"
+  [houseName]="houseName"
+  [isInsideHouse]="true"
+  [houseId]="houseId">
+</app-header>
+
+<p-toast position="top-center" />
+
+<div class="go-back" *ngIf="!loading">
+    <i class="pi pi-arrow-left back-arrow" (click)="goBack()" title="Back to House"></i>
+</div>
+
+<div *ngIf="loading" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
+
+<div class="profile-wrapper" *ngIf="!loading">
+  <!-- LEWA STRONA: dodawanie użytkowników -->
+  <div class="left">
+    <div class="form-card">
+      <div class="profile-header">
+        <i class="pi pi-user-plus user-icon"></i>
+        <h2>Add User</h2>
+        <div class="divider"></div>
+      </div>
+
+      <form [formGroup]="addUserForm">
+        <div class="scroll-form-class">
+          <div class="field search-wrapper" (focusout)="hideSearchDropdown()">
+            <label>Search User:</label>
+            <div class="search-input-container">
+              <input
+                type="text"
+                pInputText
+                formControlName="search"
+                (keydown.enter)="searchUsers()"
+                [class.invalid]="isInvalid('search')"
+                placeholder="Enter login or mail"
+              />
+              <button pButton icon="pi pi-search" class="search-button" (click)="searchUsers()" type="button"></button>
+            </div>
+            <div class="error-message" *ngIf="isInvalid('search')">Search is required.</div>
+          
+            <div class="search-dropdown" *ngIf="addUserForm.get('search')?.value && (isSearching || hasSearched)">
+              <div class="search-loading" *ngIf="isSearching">
+                <i class="pi pi-spin pi-spinner" style="font-size: 1.5rem"></i>
+              </div>
+              <div class="search-result" *ngFor="let user of searchResults" (click)="selectUser(user)">
+                <i class="pi pi-user"></i> {{ user.UserLogin }}
+              </div>
+              <div class="search-empty" *ngIf="!searchResults.length && !isSearching">
+                No users found.
+              </div>
+            </div>
+          </div>
+          
+
+          <div class="field">
+            <label>Select Role:</label>
+            <p-dropdown
+              [options]="roles"
+              optionLabel="label"
+              formControlName="role"
+              placeholder="Select Role"
+              [class.invalid]="isInvalid('role')"
+            ></p-dropdown>
+            <div class="error-message" *ngIf="isInvalid('role')">Role is required.</div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button
+            pButton
+            label="Add"
+            class="btn-add"
+            icon="pi pi-plus"
+            (click)="addUser()"
+            type="button"
+            [disabled]="addUserForm.invalid"
+          ></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ŚRODKOWY DIVIDER -->
+  <div class="center">
+    <div class="form-card-divider-vertical"></div>
+  </div>
+
+  <!-- PRAWA STRONA: aktualni użytkownicy -->
+  <div class="right">
+    <div class="form-card">
+      <div class="profile-header">
+        <i class="pi pi-users user-icon"></i>
+        <h2>Current Users</h2>
+        <div class="divider"></div>
+      </div>
+
+      <ng-container *ngIf="users?.length; else noUsers">
+        <div class="users-scroll">
+          <div class="user-row" *ngFor="let user of users">
+            <img src="assets/images/logo3_white.png" class="user-icon-img" />
+            <span><strong>{{ user.UserLogin }}</strong>: {{ user.Role }}</span>
+            <div class="user-actions">
+              <i class="pi pi-pencil edit" (click)="openEditRole(user)" title="Change Role"></i>
+              <i class="pi pi-times delete" (click)="confirmRemove(user)" title="Remove User"></i>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #noUsers>
+        <div class="no-users">No users assigned.</div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay do edycji roli -->
+<app-edit-role-dialog
+  [visible]="showEditDialog"
+  [currentRole]="editedUserRole"
+  [userLogin]="editedUser?.UserLogin"
+  (confirm)="onRoleChange($event)"
+  (cancel)="onDialogClosed()"
+  (closed)="onDialogClosed()"
+/>
+
+<app-confirm-dialog
+  [visible]="removeDialogVisible"
+  [header]="'Remove User'"
+  [message]="'Are you sure you want to remove ' + userToRemove?.UserLogin + ' from ' + houseName + '?'"
+  (accept)="acceptRemove()"
+  (reject)="cancelRemove()"
+  (closed)="cancelRemove()"
+/>

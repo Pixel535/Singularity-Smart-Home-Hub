@@ -49,6 +49,7 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
 
   houseId!: number;
   houseName = '';
+  userRole: string = '';
   loading = true;
   isEditing = false;
   editingRoomId: number | null = null;
@@ -90,6 +91,10 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     this.addRoomForm = this.fb.group({
       RoomName: ['', Validators.required]
     });
+  }
+  
+  isOwner(): boolean {
+    return this.userRole === 'Owner';
   }
 
   toggleEditForm(room: any) {
@@ -145,7 +150,12 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
 
   toggleAddForm() {
     this.showAddForm = !this.showAddForm;
-    if (!this.showAddForm) this.addRoomForm.reset();
+  
+    if (!this.showAddForm) {
+      this.addRoomForm.reset();
+      this.isEditing = false;
+      this.editingRoomId = null;
+    }
   }
 
   isInvalid(fieldName: string): boolean {
@@ -185,13 +195,16 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
         this.toggleAddForm();
         this.loadRooms();
       },
-      error: () => {
+      error: (err) => {
+        const detail = err?.error?.msg || (
+          this.isEditing
+            ? 'Failed to update room.'
+            : 'Failed to add room.'
+        );
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: this.isEditing
-            ? 'Failed to update room.'
-            : 'Failed to add room.'
+          detail
         });
       }
     });
@@ -220,11 +233,12 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
         });
         this.loadRooms();
       },
-      error: () => {
+      error: err => {
+        const detail = err?.error?.msg || 'Failed to delete room';
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to delete room.'
+          detail
         });
       },
       complete: () => {
@@ -244,13 +258,15 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.houseName = res.HouseName;
+          this.userRole = res.Role;
           this.loadRooms();
         },
-        error: () => {
+        error: err => {
+          const detail = err?.error?.msg || 'Failed to load house data';
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Failed to load house data'
+            detail
           });
         }
       });
@@ -262,11 +278,12 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.rooms = res.rooms;
         },
-        error: () => {
+        error: err => {
+          const detail = err?.error?.msg || 'Failed to load rooms';
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Failed to load rooms'
+            detail
           });
         },
         complete: () => {

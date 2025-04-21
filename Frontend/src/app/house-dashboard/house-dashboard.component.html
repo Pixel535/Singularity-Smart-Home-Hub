@@ -72,6 +72,7 @@
           style="cursor: pointer;"
         >
           <button
+            *ngIf="isOwner()"
             class="delete-button"
             (click)="confirmDeleteRoom(room); $event.stopPropagation()"
             pButton
@@ -81,6 +82,7 @@
           ></button>
 
           <button
+            *ngIf="isOwner()"
             class="edit-button"
             (click)="toggleEditForm(room); $event.stopPropagation()"
             pButton
@@ -130,7 +132,7 @@
         </div>
       </div>
 
-      <div class="add-room-btn-container">
+      <div class="add-room-btn-container" *ngIf="isOwner()">
         <button pButton label="Add Room" icon="pi pi-plus" (click)="toggleAddForm()"></button>
       </div>
     </div>

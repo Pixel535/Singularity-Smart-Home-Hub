@@ -100,11 +100,12 @@ export class ProfileComponent implements OnInit {
         this.isEditing = false;
         Object.assign(this.userData, this.profileForm.value);
       },
-      error: () => {
+      error: err => {
+        const detail = err?.error?.msg || 'Failed to update profile';
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to update profile.'
+          detail
         });
       }
     });
@@ -124,11 +125,12 @@ export class ProfileComponent implements OnInit {
         });
         this.auth.logout();
       },
-      error: () => {
+      error: err => {
+        const detail = err?.error?.msg || 'Failed to delete account';
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to delete account.'
+          detail
         });
       }
     });

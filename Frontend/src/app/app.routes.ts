@@ -34,12 +34,6 @@ export const routes: Routes = [
     canActivate: [canActivateAuth]
   },
   {
-    path: 'dashboard/manageUsers/:houseId',
-    loadComponent: () =>
-      import('./dashboard/manage-users/manage-users.component').then(m => m.ManageUsersComponent),
-    canActivate: [canActivateAuth]
-  },
-  {
     path: 'house/dashboard',
     loadComponent: () => import('./house-dashboard/house-dashboard.component').then(m => m.HouseDashboardComponent),
     canActivate: [canActivateAuth]
@@ -52,6 +46,12 @@ export const routes: Routes = [
   {
     path: 'house/info',
     loadComponent: () => import('./house-info/house-info.component').then((m) => m.HouseInfoComponent),
+    canActivate: [canActivateAuth]
+  },
+  {
+    path: 'house/manageUsers',
+    loadComponent: () =>
+      import('./manage-users/manage-users.component').then(m => m.ManageUsersComponent),
     canActivate: [canActivateAuth]
   },
   {

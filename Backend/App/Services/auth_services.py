@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 def register_user(data):
-    if get_user_by_login(data["UserLogin"]).data:
+    if get_user_by_login(data["UserLogin"]):
         return log_and_message_response("Login already exists", Statuses.CONFLICT, "info", None)
-    if get_user_by_mail(data["Mail"]).data:
+    if get_user_by_mail(data["Mail"]):
         return log_and_message_response("Email already in use", Statuses.CONFLICT, "info", None)
-    if get_user_by_phone(data["TelephoneNumber"]).data:
+    if get_user_by_phone(data["TelephoneNumber"]):
         return log_and_message_response("Phone number already in use", Statuses.CONFLICT, "info", None)
 
     data["Password"] = generate_password_hash(data["Password"])

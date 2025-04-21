@@ -227,11 +227,11 @@
 }
 
 :host ::ng-deep .p-dropdown.p-focus {
-  border-color: v.$secondary-color;
+  border-color: v.$secondary-color !important;
 }
 
 :host ::ng-deep .p-inputtext:enabled:focus {
-  border-color: v.$secondary-color;
+  border-color: v.$secondary-color !important;
 }
 
 :host ::ng-deep .p-select-option.p-select-option-selected {
@@ -240,8 +240,8 @@
 }
 
 :host ::ng-deep .p-select-option:hover {
-  background-color: color-mix(in srgb, v.$secondary-color, white 10%);
-  color: white;
+  background-color: color-mix(in srgb, v.$secondary-color, white 10%) !important;
+  color: white !important;
 }
 
 .fullscreen-loader {

@@ -115,11 +115,12 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
         this.roomName = res.RoomName;
         this.loading = false;
       },
-      error: () => {
+      error: err => {
+        const detail = err?.error?.msg || 'Failed to load room data';
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to load room data'
+          detail
         });
         this.loading = false;
       }

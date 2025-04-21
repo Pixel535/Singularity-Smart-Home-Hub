@@ -30,3 +30,10 @@ def update_user(user_id, data):
 
 def delete_user(user_id):
     return Config.supabase.table("User").delete().eq("UserID", user_id).execute()
+
+
+def search_users_by_login_or_mail(query):
+    try:
+        return Config.supabase.table("User").select("UserLogin").or_(f"UserLogin.ilike.%{query}%,Mail.ilike.%{query}%").execute()
+    except Exception as e:
+        return log_and_message_response("User search query failed", Statuses.BAD_REQUEST, "error", e)

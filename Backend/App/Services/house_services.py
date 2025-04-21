@@ -1,6 +1,7 @@
 from Backend.App.Models.house_model import get_house_by_user_and_house_id, get_user_house_by_userID_houseID, \
-    get_rooms_by_house_id, insert_room, get_room_by_id, update_room, delete_room, get_users_assigned_to_house
-from Backend.App.Models.user_model import get_user_by_login
+    get_rooms_by_house_id, insert_room, get_room_by_id, update_room, delete_room, get_users_assigned_to_house, \
+    delete_user_from_house, update_user_role_in_house, insert_user_into_house
+from Backend.App.Models.user_model import get_user_by_login, search_users_by_login_or_mail
 from Backend.App.config import log_and_message_response, Statuses
 
 
@@ -46,8 +47,8 @@ def add_room(user_login, data):
 
     try:
         link = get_user_house_by_userID_houseID(user_id, house_id)
-        if not link:
-            return log_and_message_response("Access denied", Statuses.FORBIDDEN)
+        if not link or not link.data or link.data.get("Role") != "Owner":
+            return log_and_message_response("Only owner can add rooms", Statuses.FORBIDDEN)
     except Exception as e:
         return log_and_message_response("Error with getting link between house and user", Statuses.BAD_REQUEST, "error", e)
 
@@ -183,3 +184,173 @@ def get_users_from_house(user_login, data):
             })
 
     return {"users": users}, Statuses.OK
+
+
+def search_users_for_house_service(user_login, data):
+    query = data.get("query")
+    house_id = data.get("HouseID")
+
+    if not query or not house_id:
+        log_and_message_response("Missing search query or HouseID", Statuses.BAD_REQUEST)
+        return {"results": []}, Statuses.BAD_REQUEST
+
+    try:
+        current_user = get_user_by_login(user_login)
+        current_login = current_user.data["UserLogin"]
+
+        existing = get_users_assigned_to_house(house_id)
+        existing_logins = [
+            row.get("Users", {}).get("UserLogin")
+            for row in existing.data or []
+            if row.get("Users", {}).get("UserLogin")
+        ]
+
+        results = search_users_by_login_or_mail(query)
+        filtered = [
+            user for user in results.data or []
+            if user["UserLogin"] not in existing_logins and user["UserLogin"] != current_login
+        ]
+
+        return {"results": filtered}, Statuses.OK
+
+    except Exception as e:
+        log_and_message_response("User search failed", Statuses.BAD_REQUEST, "error", e)
+        return {"results": []}, Statuses.BAD_REQUEST
+
+
+def add_user_to_house_service(user_login, data):
+    house_id = data.get("HouseID")
+    target_login = data.get("UserLogin")
+    role_data = data.get("Role")
+    role = role_data.get("value") if isinstance(role_data, dict) else role_data
+
+    if not house_id or not target_login or not role:
+        return log_and_message_response("Missing data", Statuses.BAD_REQUEST)
+
+    try:
+        user = get_user_by_login(user_login)
+        if not user:
+            return log_and_message_response("User not found", Statuses.NOT_FOUND)
+    except Exception as e:
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+
+    user_id = user.data["UserID"]
+
+    try:
+        link = get_user_house_by_userID_houseID(user_id, house_id)
+        if not link or not link.data or link.data.get("Role") != "Owner":
+            return log_and_message_response("Only owner can add users", Statuses.FORBIDDEN)
+    except Exception as e:
+        return log_and_message_response("Error with link between house and user", Statuses.BAD_REQUEST, "error", e)
+
+    try:
+        new_user = get_user_by_login(target_login)
+        if not new_user:
+            return log_and_message_response("User to add not found", Statuses.NOT_FOUND)
+
+        user_data = {
+            "UserID": new_user.data["UserID"],
+            "HouseID": house_id,
+            "Role": role
+        }
+        insert_user_into_house(user_data)
+        return {"msg": "User added"}, Statuses.CREATED
+    except Exception as e:
+        return log_and_message_response("Failed to add user", Statuses.BAD_REQUEST, "error", e)
+
+
+def change_user_role_service(user_login, data):
+    house_id = data.get("HouseID")
+    target_login = data.get("UserLogin")
+    new_role = data.get("NewRole")
+
+    if not house_id or not target_login or not new_role:
+        return log_and_message_response("Missing data", Statuses.BAD_REQUEST)
+
+    try:
+        user = get_user_by_login(user_login)
+        target = get_user_by_login(target_login)
+        if not user:
+            return log_and_message_response("User not found", Statuses.NOT_FOUND)
+        if not target:
+            return log_and_message_response("User not found", Statuses.NOT_FOUND)
+    except Exception as e:
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+
+    user_id = user.data["UserID"]
+    target_user_id = target.data["UserID"]
+
+    if user_id == target_user_id:
+        return log_and_message_response("You cannot change your own role", Statuses.FORBIDDEN)
+
+    try:
+        link = get_user_house_by_userID_houseID(user_id, house_id)
+        if not link or not link.data or link.data.get("Role") != "Owner":
+            return log_and_message_response("Only owner can chane roles", Statuses.FORBIDDEN)
+    except Exception as e:
+        return log_and_message_response("Error with link between house and user", Statuses.BAD_REQUEST, "error", e)
+
+    try:
+        response = get_users_assigned_to_house(house_id)
+        if not response:
+            return log_and_message_response("Something went wrong with receiving data", Statuses.FORBIDDEN)
+        data = response.data or []
+    except Exception as e:
+        return log_and_message_response("Failed to get house users", Statuses.BAD_REQUEST, "error", e)
+
+    if len(data) == 1:
+        return log_and_message_response("You cannot change the last member's role", Statuses.FORBIDDEN)
+
+    try:
+        update_user_role_in_house(house_id, target_user_id, new_role)
+        return {"msg": "Role updated"}, Statuses.OK
+    except Exception as e:
+        return log_and_message_response("Failed to update role", Statuses.BAD_REQUEST, "error", e)
+
+
+def remove_user_from_house_service(user_login, data):
+    house_id = data.get("HouseID")
+    target_login = data.get("UserLogin")
+
+    if not house_id or not target_login:
+        return log_and_message_response("Missing data", Statuses.BAD_REQUEST)
+
+    try:
+        user = get_user_by_login(user_login)
+        target = get_user_by_login(target_login)
+        if not user:
+            return log_and_message_response("User not found", Statuses.NOT_FOUND)
+        if not target:
+            return log_and_message_response("User not found", Statuses.NOT_FOUND)
+    except Exception as e:
+        return log_and_message_response("Error with getting user Info", Statuses.BAD_REQUEST, "error", e)
+
+    user_id = user.data["UserID"]
+    target_user_id = target.data["UserID"]
+
+    if user_id == target_user_id:
+        return log_and_message_response("You cannot remove yourself", Statuses.FORBIDDEN)
+
+    try:
+        link = get_user_house_by_userID_houseID(user_id, house_id)
+        if not link or not link.data or link.data.get("Role") != "Owner":
+            return log_and_message_response("Only owner can remove users", Statuses.FORBIDDEN)
+    except Exception as e:
+        return log_and_message_response("Error with link between house and user", Statuses.BAD_REQUEST, "error", e)
+
+    try:
+        response = get_users_assigned_to_house(house_id)
+        if not response:
+            return log_and_message_response("Something went wrong with receiving data", Statuses.FORBIDDEN)
+        data = response.data or []
+    except Exception as e:
+        return log_and_message_response("Failed to get house users", Statuses.BAD_REQUEST, "error", e)
+
+    if len(data) == 1:
+        return log_and_message_response("You cannot remove the only user", Statuses.FORBIDDEN)
+
+    try:
+        delete_user_from_house(house_id, target_user_id)
+        return {"msg": "User removed"}, Statuses.OK
+    except Exception as e:
+        return log_and_message_response("Failed to remove user", Statuses.BAD_REQUEST, "error", e)

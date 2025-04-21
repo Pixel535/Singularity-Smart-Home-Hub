@@ -22,7 +22,9 @@ def get_house_by_user_and_house_id(user_login, house_id):
         house = Config.supabase.table("House").select("*").eq("HouseID", house_id).maybe_single().execute()
         if not house or not house.data:
             return log_and_message_response("House not found", Statuses.NOT_FOUND, "error", None)
-        return house.data, Statuses.OK
+        result = house.data
+        result["Role"] = user_house.data["Role"]
+        return result, Statuses.OK
     except Exception as e:
         return log_and_message_response("Fetching house failed", Statuses.BAD_REQUEST, "error", e)
 
@@ -65,3 +67,12 @@ def get_users_assigned_to_house(house_id):
         return Config.supabase.table("UserHouse").select("Role, User(UserLogin)").eq("HouseID", house_id).execute()
     except Exception as e:
         return log_and_message_response("Error while fetching users from house", Statuses.BAD_REQUEST, "error", e)
+
+def insert_user_into_house(data):
+    return Config.supabase.table("UserHouse").insert(data).execute()
+
+def update_user_role_in_house(house_id, user_id, role):
+    return Config.supabase.table("UserHouse").update({"Role": role}).eq("HouseID", house_id).eq("UserID", user_id).execute()
+
+def delete_user_from_house(house_id, user_id):
+    return Config.supabase.table("UserHouse").delete().eq("HouseID", house_id).eq("UserID", user_id).execute()

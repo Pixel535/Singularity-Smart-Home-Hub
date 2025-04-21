@@ -20,7 +20,12 @@ def get_houses_by_user_login(user_login):
         log_and_message_response("Error with getting houses", Statuses.BAD_REQUEST, "error", e)
         return []
 
-    return [row["House"] for row in response.data]
+    return [
+        {
+            **row["House"],
+            "Role": row.get("Role")
+        }
+        for row in response.data]
 
 
 def insert_user_house(user_login, house_data):

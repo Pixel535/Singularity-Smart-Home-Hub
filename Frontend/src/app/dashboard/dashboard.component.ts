@@ -43,6 +43,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.
 })
 export class DashboardComponent implements OnInit {
   private baseUrl = 'http://localhost:5000/dashboard';
+  private homeUrl = 'http://localhost:5000/home';
   private auth = inject(AuthService);
   private router = inject(Router);
   private http = inject(HttpClient);
@@ -88,15 +89,20 @@ export class DashboardComponent implements OnInit {
         this.houses = res.houses;
         this.loading = false;
       },
-      error: () => {
+      error: err => {
+        const detail = err?.error?.msg || 'Failed to load houses.';
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to load houses.'
+          detail
         });
         this.auth.logout();
       }
     });
+  }
+
+  isOwner(house: any): boolean {
+    return house.Role === 'Owner';
   }
 
   toggleAddForm(house: any = null) {
@@ -197,18 +203,25 @@ export class DashboardComponent implements OnInit {
         });
         this.fetchHouses();
       },
-      error: () => {
+      error: err => {
+        const detail = err?.error?.msg || 'Failed to delete the house.';
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to delete the house.'
+          detail
         });
       }
     });
   }
 
-  goToManageUsers(houseId: number) {
-    this.router.navigate([`${this.baseUrl}/manageUsers`, houseId]);
+  goToManageUsers(houseId: number, houseName: string) {
+    this.router.navigate(['/house/manageUsers'], {
+      state: {
+        houseId,
+        houseName,
+        from: 'dashboard'
+      }
+    });
   }
 
   goToHouseDashboard(houseId: number) {

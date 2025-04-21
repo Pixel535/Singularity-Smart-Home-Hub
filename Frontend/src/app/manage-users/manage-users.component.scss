@@ -1,0 +1,324 @@
+@use '../shared/variables.scss' as v;
+
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 3rem;
+  padding: 2rem;
+
+  .left, .right, .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .left, .right {
+    flex: 1;
+  }
+
+  .center {
+    width: 4px;
+  }
+
+  .form-card {
+    background-color: v.$card-color;
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 600px;
+    min-width: 500px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: v.$text-color;
+    display: flex;
+    flex-direction: column;
+    height: 640px;
+
+    form {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .scroll-form-class {
+      overflow-y: auto;
+      flex-grow: 1;
+      padding-right: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .users-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+
+  .users-scroll::-webkit-scrollbar-thumb {
+    background-color: v.$secondary-color;
+    border-radius: 3px;
+  }
+
+    .field {
+      margin-bottom: 1rem;
+
+      label {
+        font-weight: 600;
+        font-size: 1.2rem;
+        display: block;
+        margin-bottom: 0.3rem;
+      }
+
+      span {
+        display: block;
+        font-size: 1rem;
+      }
+
+      input, .p-dropdown {
+        width: 100%;
+      }
+
+      input {
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        border: 1px solid v.$input-border-color;
+        color: v.$text-color-darker;
+
+        &:focus {
+          outline: none;
+          border-color: v.$secondary-color;
+        }
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+
+      button {
+        padding: 0.75rem 2rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .btn-add {
+        background-color: v.$secondary-color !important;
+        color: v.$text-color !important;
+        border: none !important;
+
+        &:hover {
+          background-color: v.$hover-secondary-color !important;
+        }
+      }
+    }
+  }
+
+  .form-card-divider-vertical {
+    width: 4px;
+    height: 90%;
+    background-color: v.$secondary-color;
+    border-radius: 999px;
+  }
+
+  .profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .user-icon {
+      font-size: 2rem;
+      color: v.$text-color;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .divider {
+      height: 4px;
+      width: 20rem;
+      background-color: v.$secondary-color;
+      margin: 0 auto;
+      border-radius: 999px;
+    }
+  }
+
+  .users-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .user-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: 500;
+    width: 100%;
+
+    img.user-icon-img {
+      width: 20px;
+      height: 20px;
+      margin-right: 0.7rem;
+      filter: brightness(0) invert(1);
+    }
+
+    span {
+      flex-grow: 1;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 0.7rem;
+      align-items: center;
+
+      .delete {
+        cursor: pointer;
+        font-size: 1.2rem;
+
+        &:hover {
+          color: v.$error-color;
+        }
+      }
+
+      .edit {
+        cursor: pointer;
+        font-size: 1.2rem;
+
+        &:hover {
+          color: v.$secondary-color;
+        }
+      }
+    }
+  }
+}
+
+.no-users {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    color: v.$text-color;
+    font-size: 1.1rem;
+    padding: 2rem;
+  }
+
+.invalid {
+  border: 2px solid v.$error-color !important;
+}
+
+.error-message {
+  color: v.$error-color;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.fullscreen-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: v.$text-color;
+    background: v.$background-color;
+}
+
+.go-back {
+    padding-top: 2rem;
+    padding-left: 2rem;
+    position: absolute;
+}
+
+.back-arrow {
+    font-size: 1.8rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: v.$secondary-color;
+    }
+  }
+
+:host ::ng-deep .p-select-option.p-select-option-selected.p-focus {
+    background-color: v.$secondary-color !important;
+    border-color: v.$secondary-color !important;
+    color: white !important;
+}
+
+:host ::ng-deep .p-select-label {
+    border-color: v.$secondary-color !important;
+}
+
+:host ::ng-deep .p-select {
+    border-color: v.$secondary-color !important;
+}
+
+:host ::ng-deep .p-select-option:hover {
+    background-color: color-mix(in srgb, v.$secondary-color, white 10%) !important;
+    color: white !important;
+}
+
+.search-wrapper {
+  position: relative;
+
+  .search-input-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .search-button {
+      height: 2.5rem;
+      background-color: v.$secondary-color;
+      border-color: v.$secondary-color;
+      color: v.$text-color;
+
+      &:hover {
+        background-color: v.$hover-secondary-color;
+      }
+    }
+  }
+
+  .search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: v.$card-color;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 0.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem;
+  }
+
+  .search-result {
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &:hover {
+      background-color: v.$secondary-color;
+      color: #fff;
+      border-radius: 0.3rem;
+    }
+  }
+
+  .search-loading,
+  .search-empty {
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    color: v.$text-color;
+  }
+}

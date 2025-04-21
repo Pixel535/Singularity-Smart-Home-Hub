@@ -1,0 +1,34 @@
+<p-dialog
+  #customDialog
+  [visible]="visible"
+  [modal]="true"
+  [closable]="false"
+  [closeOnEscape]="true"
+  [style]="{ width: '400px' }"
+  [baseZIndex]="1100"
+  (click)="handleClickOutside($event)"
+>
+  <div class="headless-wrapper">
+    <div class="icon-circle">
+      <i class="pi pi-pencil"></i>
+    </div>
+    <span class="dialog-title">Edit Role</span>
+    <p class="dialog-text">Change role for <strong>{{ userLogin }}</strong></p>
+
+    <div class="field">
+      <label>Role:</label>
+      <p-dropdown
+        [options]="availableRoles"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="currentRole"
+        placeholder="Select Role"
+      />
+    </div>
+
+    <div class="dialog-actions">
+      <button pButton label="Save" (click)="onConfirm()" class="btn-confirm w-32"></button>
+      <button pButton label="Cancel" (click)="onCancel()" class="btn-cancel w-32 p-button-outlined"></button>
+    </div>
+  </div>
+</p-dialog>
