@@ -82,7 +82,7 @@ export class HouseInfoComponent implements OnInit {
   }
 
   isOwner(): boolean {
-    return this.userRole === 'Owner';
+    return this.auth.isHouseSession() || this.userRole === 'Owner';
   }
 
   private loadHouse(): Promise<void> {
@@ -133,7 +133,6 @@ export class HouseInfoComponent implements OnInit {
       City: [h.City, Validators.required],
       StreetAddress: [h.StreetAddress, Validators.required],
       PostalCode: [h.PostalCode, Validators.required],
-      PIN: [h.PIN, [Validators.required, Validators.pattern(/^\d{6}$/)]]
     });
   }
 
@@ -154,7 +153,6 @@ export class HouseInfoComponent implements OnInit {
       ...this.houseForm.value
     };
 
-    delete payload.PIN;
 
     this.http.put(`${this.dashBase}/editHouse`, payload, {
       withCredentials: true
@@ -246,4 +244,7 @@ export class HouseInfoComponent implements OnInit {
     });
   }
   
+  canDelete(): boolean {
+    return this.auth.isUserSession() && this.userRole === 'Owner';
+  }
 }

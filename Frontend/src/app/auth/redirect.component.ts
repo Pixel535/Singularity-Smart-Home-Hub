@@ -13,15 +13,26 @@ export class RedirectComponent implements OnInit {
 
   ngOnInit(): void {
     this.auth.getUser().subscribe({
-      next: () => {
+      next: (res) => {
         this.auth.isLoggedIn$.next(true);
         this.auth.startRefreshLoop();
-        this.router.navigate(['/dashboard']);
+  
+        const type = this.auth.getSessionType();
+        const route = type === 'house' ? '/house/dashboard' : '/dashboard';
+  
+        const navExtras = type === 'house' && res.houseId
+          ? { state: { houseId: res.houseId } }
+          : undefined;
+  
+        this.router.navigate([route], navExtras);
       },
       error: () => {
         this.auth.isLoggedIn$.next(false);
-        this.router.navigate(['/login']);
+        const type = this.auth.getSessionType();
+        this.router.navigate([type === 'house' ? '/loginHouse' : '/login']);
       }
     });
   }
+  
+  
 }

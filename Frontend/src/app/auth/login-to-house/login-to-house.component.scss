@@ -1,0 +1,90 @@
+@use '../../shared/variables.scss' as v;
+@use '../../shared/form-style.scss' as *;
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: v.$background-color;
+  }
+  
+  .form-card {
+    border-radius: 10px;
+    padding: 1rem !important;
+    max-width: 350px;
+  }
+
+  .image {
+    width: 80px !important;
+  }
+
+  .subtitle {
+    font-size: 1.2rem !important;
+  }
+  
+  .pin-label {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: v.$text-color-darker;
+}
+
+.pin-bullets {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.pin-dot {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.3s;
+
+  &.filled {
+    background-color: v.$secondary-color;
+    border-color: v.$secondary-color;
+  }
+}
+
+.pin-keypad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+
+  .keypad-row {
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+      width: 60px;
+      height: 60px;
+      font-size: 1.2rem;
+      border: none;
+      background-color: #40405f;
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #56567b;
+      }
+
+      &:active {
+        background-color: #6d6d92;
+      }
+    }
+
+    .spacer {
+      width: 60px;
+      height: 60px;
+    }
+  }
+}

@@ -123,7 +123,7 @@
           
             <div class="action-buttons" *ngIf="!isEditing && isOwner()">
               <button pButton label="Edit" class="btn-edit" icon="pi pi-pencil" (click)="startEdit()"></button>
-              <button pButton label="Delete" class="btn-delete p-button-outlined" icon="pi pi-trash" (click)="deleteHouse()"></button>
+              <button *ngIf="canDelete()" pButton label="Delete" class="btn-delete p-button-outlined" icon="pi pi-trash" (click)="deleteHouse()"></button>
             </div>
           
             <div class="action-buttons" *ngIf="isEditing && isOwner()">

@@ -94,8 +94,9 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
   }
   
   isOwner(): boolean {
-    return this.userRole === 'Owner';
+    return this.auth.isHouseSession() || this.userRole === 'Owner';
   }
+  
 
   toggleEditForm(room: any) {
     this.showAddForm = true;

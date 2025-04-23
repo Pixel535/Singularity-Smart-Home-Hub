@@ -1,11 +1,13 @@
 from Backend.App.Models.user_model import get_user_by_login, update_user, delete_user
-from Backend.App.config import log_and_message_response, Statuses
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from Backend.App.Utils.session_helper import (log_and_message_response, Statuses, get_identity_context)
 
-def get_user_profile(user_login):
+
+def get_user_profile():
+    context = get_identity_context()
     try:
-        user = get_user_by_login(user_login)
+        user = get_user_by_login(context["user_login"])
         if not user:
             return log_and_message_response("User not found", Statuses.NOT_FOUND, "error")
     except Exception as e:
@@ -14,9 +16,11 @@ def get_user_profile(user_login):
     user_data = {k: v for k, v in user.data.items() if k != "Password"}
     return {"user": user_data}, Statuses.OK
 
-def update_user_profile(user_login, new_data):
+
+def update_user_profile(new_data):
+    context = get_identity_context()
     try:
-        user = get_user_by_login(user_login)
+        user = get_user_by_login(context["user_login"])
         if not user:
             return log_and_message_response("User not found", Statuses.NOT_FOUND, "error")
     except Exception as e:
@@ -28,9 +32,11 @@ def update_user_profile(user_login, new_data):
     except Exception as e:
         return log_and_message_response("Failed to update user", Statuses.BAD_REQUEST, "error", e)
 
-def delete_user_account(user_login):
+
+def delete_user_account():
+    context = get_identity_context()
     try:
-        user = get_user_by_login(user_login)
+        user = get_user_by_login(context["user_login"])
         if not user:
             return log_and_message_response("User not found", Statuses.NOT_FOUND, "error")
     except Exception as e:
@@ -43,9 +49,10 @@ def delete_user_account(user_login):
         return log_and_message_response("Failed to delete user", Statuses.BAD_REQUEST, "error", e)
 
 
-def change_user_password(user_login, data):
+def change_user_password(data):
+    context = get_identity_context()
     try:
-        user = get_user_by_login(user_login)
+        user = get_user_by_login(context["user_login"])
         if not user:
             return log_and_message_response("User not found", Statuses.NOT_FOUND, "error")
     except Exception as e:

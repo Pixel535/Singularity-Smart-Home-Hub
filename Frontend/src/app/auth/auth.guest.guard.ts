@@ -9,7 +9,8 @@ export const canActivateGuest: CanActivateFn = () => {
 
   return auth.getUser().pipe(
     map(() => {
-      router.navigate(['/dashboard']);
+      const type = auth.getSessionType();
+      router.navigate([type === 'house' ? '/house/dashboard' : '/dashboard']);
       return false;
     }),
     catchError(() => of(true))

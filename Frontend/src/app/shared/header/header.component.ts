@@ -30,22 +30,34 @@ export class HeaderComponent implements OnChanges {
 
   constructor(private auth: AuthService, private router: Router) {}
 
-  menuItems = [
-    {
-      label: 'Profile',
-      icon: 'pi pi-user',
-      command: () => this.router.navigate(['/profile'])
-    },
-    {
-      label: 'Log out',
-      icon: 'pi pi-sign-out',
-      command: () => this.logout()
-    }
-  ];
-
+  menuItems: any[] = [];
   houseMenuItems: any[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
+    const sessionType = this.auth.getSessionType();
+    
+    this.menuItems =
+    sessionType === 'user'
+      ? [
+          {
+            label: 'Profile',
+            icon: 'pi pi-user',
+            command: () => this.router.navigate(['/profile'])
+          },
+          {
+            label: 'Log out',
+            icon: 'pi pi-sign-out',
+            command: () => this.logout()
+          }
+        ]
+      : [
+          {
+            label: 'Log out',
+            icon: 'pi pi-sign-out',
+            command: () => this.logout()
+          }
+        ];
+
     this.houseMenuItems =
       this.isInsideHouse && this.houseId != null
         ? [
@@ -66,6 +78,14 @@ export class HeaderComponent implements OnChanges {
   }
 
   goHome() {
-    this.router.navigate(['/dashboard']);
+    const sessionType = this.auth.getSessionType();
+    if (sessionType === 'house' && this.houseId != null) {
+      this.router.navigate(['/house/dashboard'], {
+        state: { houseId: this.houseId }
+      });
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
   }
+  
 }

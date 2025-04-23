@@ -1,39 +1,50 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from Backend.App.Services.dashboard_services import get_user_houses, add_house, remove_house, edit_house
-import logging
+from flask_jwt_extended import jwt_required
+from Backend.App.Services.dashboard_services import (get_user_houses, add_house, remove_house, edit_house)
+from Backend.App.Utils.session_helper import get_identity_context, log_and_message_response, Statuses
 
-logger = logging.getLogger(__name__)
 dashboard_route = Blueprint("dashboard", __name__)
+
 
 @dashboard_route.route("/houses", methods=["GET"])
 @jwt_required(locations=["cookies"])
 def get_houses():
-    user_login = get_jwt_identity()
-    response, status = get_user_houses(user_login)
+    context = get_identity_context()
+    if context["is_house_session"]:
+        return log_and_message_response("Please log in as a user to view houses", Statuses.FORBIDDEN)
+
+    response, status = get_user_houses()
     return jsonify(response), status
+
+
 
 @dashboard_route.route("/addHouse", methods=["POST"])
 @jwt_required(locations=["cookies"])
 def add_new_house():
-    user_login = get_jwt_identity()
+    context = get_identity_context()
+    if context["is_house_session"]:
+        return log_and_message_response("Please log in as a user to create a house", Statuses.FORBIDDEN)
+
     data = request.get_json()
-    response, status = add_house(user_login, data)
+    response, status = add_house(data)
     return jsonify(response), status
+
 
 @dashboard_route.route("/removeHouse", methods=["DELETE"])
 @jwt_required(locations=["cookies"])
 def remove_existing_house():
-    user_login = get_jwt_identity()
+    context = get_identity_context()
+    if context["is_house_session"]:
+        return log_and_message_response("This operation is not allowed in house session. Please log in as a user.", Statuses.FORBIDDEN)
+
     data = request.get_json()
-    response, status = remove_house(user_login, data)
+    response, status = remove_house(data)
     return jsonify(response), status
+
 
 @dashboard_route.route("/editHouse", methods=["PUT"])
 @jwt_required(locations=["cookies"])
 def edit_house_route():
-    user = get_jwt_identity()
     house_data = request.get_json()
-    response, status = edit_house(user, house_data)
+    response, status = edit_house(house_data)
     return jsonify(response), status
-

@@ -14,6 +14,11 @@ export const routes: Routes = [
     canActivate: [canActivateGuest]
   },
   {
+    path: 'loginHouse',
+    loadComponent: () => import('./auth/login-to-house/login-to-house.component').then(m => m.LoginToHouseComponent),
+    canActivate: [canActivateGuest]
+  },
+  {
     path: 'register',
     loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent),
     canActivate: [canActivateGuest]

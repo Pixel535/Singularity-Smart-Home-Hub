@@ -1,8 +1,21 @@
+from Backend.App.config import Config
 from Backend.App.Models.user_model import get_user_by_login
-from Backend.App.config import Config, Statuses, log_and_message_response
+from Backend.App.Utils.session_helper import log_and_message_response, Statuses, get_identity_context
 
 
-def get_house_by_user_and_house_id(user_login, house_id):
+def get_house_by_user_and_house_id(house_id):
+    context = get_identity_context()
+
+    if context["is_house_session"]:
+        return get_house_for_house_session(house_id, context["house_id"])
+
+    if context["is_user_session"]:
+        return get_house_for_user(house_id, context["user_login"])
+
+    return log_and_message_response("Invalid session", Statuses.UNAUTHORIZED)
+
+
+def get_house_for_user(house_id, user_login):
     try:
         user = get_user_by_login(user_login)
         if not user:
@@ -25,8 +38,24 @@ def get_house_by_user_and_house_id(user_login, house_id):
 
         result = {k: v for k, v in house.data.items() if k != "PIN"}
         result["Role"] = user_house.data["Role"]
-
         return result, Statuses.OK
+
+    except Exception as e:
+        return log_and_message_response("Fetching house failed", Statuses.BAD_REQUEST, "error", e)
+
+
+def get_house_for_house_session(house_id, session_house_id):
+    if session_house_id != house_id:
+        return log_and_message_response("Access denied to this house", Statuses.FORBIDDEN)
+
+    try:
+        house = Config.supabase.table("House").select("*").eq("HouseID", house_id).maybe_single().execute()
+        if not house or not house.data:
+            return log_and_message_response("House not found", Statuses.NOT_FOUND, "error", None)
+
+        result = {k: v for k, v in house.data.items() if k != "PIN"}
+        return result, Statuses.OK
+
     except Exception as e:
         return log_and_message_response("Fetching house failed", Statuses.BAD_REQUEST, "error", e)
 

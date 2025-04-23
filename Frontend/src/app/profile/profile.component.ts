@@ -52,8 +52,12 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.auth.getUser().subscribe({
-      next: (res) => this.userLogin = res.user,
-      error: () => this.userLogin = null
+      next: (res) => {
+        this.userLogin = res.session === 'user' ? res.userLogin ?? null : null;
+      },
+      error: () => {
+        this.userLogin = null;
+      }
     });
     this.http.get<{ user: any }>(`${this.baseUrl}/getProfile`, { withCredentials: true }).subscribe({
       next: (res) => {

@@ -66,8 +66,12 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.auth.startIdleWatch();
     this.auth.getUser().subscribe({
-      next: (res) => this.userLogin = res.user,
-      error: () => this.userLogin = null
+      next: (res) => {
+        this.userLogin = res.session === 'user' ? res.userLogin ?? null : null;
+      },
+      error: () => {
+        this.userLogin = null;
+      }
     });
     this.fetchHouses();
 
