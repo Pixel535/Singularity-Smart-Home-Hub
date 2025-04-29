@@ -15,6 +15,7 @@ import { TieredMenuModule } from 'primeng/tieredmenu';
 import { MenubarModule } from 'primeng/menubar';
 import { ChipModule } from 'primeng/chip';
 import { TooltipModule } from 'primeng/tooltip';
+import { SpeechService } from '../speech/speech.service';
 
 @Component({
   selector: 'app-house-dashboard',
@@ -46,6 +47,7 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private messageService = inject(MessageService);
+  private speech = inject(SpeechService);
 
   houseId!: number;
   houseName = '';
@@ -74,10 +76,11 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.auth.startIdleWatch();
-
+  
     const state = history.state;
     if (state && state.houseId) {
       this.houseId = state.houseId;
+      this.speech.playGreeting(this.houseId);
       this.loadHouseData();
     } else {
       this.messageService.add({
@@ -87,11 +90,12 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
       });
       this.router.navigate(['/dashboard']);
     }
-
+  
     this.addRoomForm = this.fb.group({
       RoomName: ['', Validators.required]
     });
   }
+  
   
   isOwner(): boolean {
     return this.auth.isHouseSession() || this.userRole === 'Owner';

@@ -20,7 +20,7 @@ class Config:
     JWT_REFRESH_CSRF_HEADER_NAME = "X-CSRF-TOKEN"
     JWT_COOKIE_SAMESITE = "Lax"
     JWT_SESSION_COOKIE = False
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=1)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
     FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:4200")
     supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
