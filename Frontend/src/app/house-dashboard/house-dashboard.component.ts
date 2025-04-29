@@ -80,7 +80,13 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     const state = history.state;
     if (state && state.houseId) {
       this.houseId = state.houseId;
-      this.speech.playGreeting(this.houseId);
+  
+      const greetedKey = `houseGreeted:${this.houseId}`;
+      if (!sessionStorage.getItem(greetedKey)) {
+        this.speech.playGreeting(this.houseId);
+        sessionStorage.setItem(greetedKey, 'true');
+      }
+  
       this.loadHouseData();
     } else {
       this.messageService.add({
@@ -95,6 +101,7 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
       RoomName: ['', Validators.required]
     });
   }
+  
   
   
   isOwner(): boolean {
