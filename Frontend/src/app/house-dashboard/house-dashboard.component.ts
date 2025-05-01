@@ -16,6 +16,7 @@ import { MenubarModule } from 'primeng/menubar';
 import { ChipModule } from 'primeng/chip';
 import { TooltipModule } from 'primeng/tooltip';
 import { SpeechService } from '../speech/speech.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-house-dashboard',
@@ -66,7 +67,7 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
   showDeleteConfirm = false;
   selectedRoomToDelete: any = null;
 
-  baseUrl = 'http://localhost:5000/house';
+  baseUrl = `${environment.apiBaseUrl}/house`;
 
   @ViewChildren('tabItem') tabItems!: QueryList<ElementRef>;
   tabIndicatorStyle = {

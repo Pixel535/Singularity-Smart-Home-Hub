@@ -6,12 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { MessageService } from 'primeng/api';
 import { HeaderComponent } from '../shared/header/header.component';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
@@ -19,6 +14,7 @@ import { ToastModule } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { COUNTRIES } from '../shared/countries';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-house-info',
@@ -47,8 +43,8 @@ export class HouseInfoComponent implements OnInit {
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
 
-  private houseBase = 'http://localhost:5000/house';
-  private dashBase = 'http://localhost:5000/dashboard';
+  private houseBase = `${environment.apiBaseUrl}/house`;
+  private dashBase = `${environment.apiBaseUrl}/dashboard`;
 
   houseId!: number;
   houseData: any = null;

@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-change-pin',
@@ -29,7 +30,7 @@ export class ChangeHousePinComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private messageService = inject(MessageService);
 
-  private baseUrl = 'http://localhost:5000/house';
+  private baseUrl = `${environment.apiBaseUrl}/house`;
 
   houseId!: number;
   from: 'dashboard' | 'info' = 'dashboard';

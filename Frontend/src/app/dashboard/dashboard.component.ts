@@ -17,6 +17,7 @@ import { COUNTRIES } from '../shared/countries';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
+import { environment } from '../../environments/environment';
 
 @Component({
   standalone: true,
@@ -42,8 +43,8 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.
   providers: [MessageService]
 })
 export class DashboardComponent implements OnInit {
-  private baseUrl = 'http://localhost:5000/dashboard';
-  private homeUrl = 'http://localhost:5000/home';
+  private baseUrl = `${environment.apiBaseUrl}/dashboard`;
+  private homeUrl = `${environment.apiBaseUrl}/home`;
   private auth = inject(AuthService);
   private router = inject(Router);
   private http = inject(HttpClient);

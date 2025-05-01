@@ -12,6 +12,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { DialogModule } from 'primeng/dialog';
 import { EditRoleDialogComponent } from '../shared/edit-role-dialog/edit-role-dialog.component';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-manage-users',
@@ -42,7 +43,7 @@ export class ManageUsersComponent implements OnInit {
   houseId!: number;
   houseName: string | null = null;
   from: 'dashboard' | 'info' = 'dashboard';
-  baseUrl = 'http://localhost:5000/house';
+  baseUrl = `${environment.apiBaseUrl}/house`;
 
   loading = true;
 

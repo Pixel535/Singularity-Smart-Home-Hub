@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'http://localhost:5000/auth';
+  private baseUrl = `${environment.apiBaseUrl}/auth`;
   isLoggedIn$ = new BehaviorSubject<boolean>(false);
   private sessionType: 'user' | 'house' | null = null;
   private idleTimer: any;

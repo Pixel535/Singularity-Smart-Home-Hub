@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { HeaderComponent } from '../shared/header/header.component';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-room-dashboard',
@@ -41,7 +42,7 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
     return !this.loading;
   }
 
-  private baseUrl = 'http://localhost:5000/house/room';
+  private baseUrl = `${environment.apiBaseUrl}/house/room`;
 
   activeTab: 'devices' | 'functions' = 'devices';
 
@@ -58,7 +59,7 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
       this.loadRoomData();
 
       this.http.post<{ HouseName: string }>(
-        'http://localhost:5000/house/getHouse',
+        `${environment.apiBaseUrl}/house/getHouse`,
         { HouseID: this.houseId },
         { withCredentials: true }
       ).subscribe({

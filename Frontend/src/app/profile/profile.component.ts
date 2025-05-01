@@ -13,6 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -40,7 +41,7 @@ export class ProfileComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  private baseUrl = 'http://localhost:5000/profile';
+  private baseUrl = `${environment.apiBaseUrl}/profile`;
 
   userLogin: string | null = null;
   userData: any = null;

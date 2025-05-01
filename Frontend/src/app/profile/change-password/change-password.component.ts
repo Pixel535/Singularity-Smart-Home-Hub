@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-change-password',
@@ -40,7 +41,7 @@ export class ChangePasswordComponent {
   showConfirm = false;
 
 
-  private baseUrl = 'http://localhost:5000/profile';
+  private baseUrl = `${environment.apiBaseUrl}/profile`;
 
   passwordsMatchValidator(group: FormGroup) {
     const newPass = group.get('NewPassword')?.value;
