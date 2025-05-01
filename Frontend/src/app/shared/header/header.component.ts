@@ -117,7 +117,7 @@ export class HeaderComponent implements OnInit, OnChanges, OnDestroy {
         });
   
         this.socket.on('invitation_created', (data) => {
-          console.log('[Socket] invitation_created received:', data);
+          console.log('[Socket] invitation_created received');
           this.loadNotifications();
         });
   
