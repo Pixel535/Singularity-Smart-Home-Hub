@@ -13,6 +13,7 @@ import { DialogModule } from 'primeng/dialog';
 import { EditRoleDialogComponent } from '../shared/edit-role-dialog/edit-role-dialog.component';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { environment } from '../../environments/environment';
+import { InvitationService } from '../shared/invitation/invitation.service';
 
 @Component({
   selector: 'app-manage-users',
@@ -39,6 +40,7 @@ export class ManageUsersComponent implements OnInit {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
+  private invitationService = inject(InvitationService);
 
   houseId!: number;
   houseName: string | null = null;
@@ -175,17 +177,16 @@ export class ManageUsersComponent implements OnInit {
       next: () => {
         this.messageService.add({
           severity: 'success',
-          summary: 'User Added',
-          detail: `User "${search}" added as "${role.value}".`
-        });
-        this.users.push({
-          UserLogin: search,
-          Role: role.value
+          summary: 'Invitation Sent',
+          detail: `User "${search}" has been invited to join this house as "${role.value}".`
         });
         this.addUserForm.reset();
+        this.searchResults = [];
+        this.selectedUser = null;
+        this.invitationService.notifyInvitationCreated();
       },
       error: (err) => {
-        const detail = err?.error?.msg || 'Failed to add user.';
+        const detail = err?.error?.msg || 'Failed to send invitation.';
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -194,6 +195,7 @@ export class ManageUsersComponent implements OnInit {
       }
     });
   }
+  
 
   selectUser(user: any) {
     this.selectedUser = user;

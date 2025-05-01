@@ -38,3 +38,15 @@ def search_users_by_login_or_mail(query):
         return Config.supabase.table("User").select("UserLogin").or_(f"UserLogin.ilike.%{query}%,Mail.ilike.%{query}%").execute()
     except Exception as e:
         return log_and_message_response("User search query failed", Statuses.BAD_REQUEST, "error", e)
+
+def insert_invitation(data):
+    return Config.supabase.table("PendingInvitation").insert(data).execute()
+
+def get_pending_invitations_for_user(user_id):
+    try:
+        return Config.supabase.table("PendingInvitation").select("InvitationID, Role, HouseID, SentFromHouseSession, House(HouseName), SenderID, Sender:User!pendinginvitation_senderid_fkey(UserLogin)").eq("UserID", user_id).execute()
+    except Exception as e:
+        return log_and_message_response("Failed to fetch invitations", Statuses.BAD_REQUEST, "error", e)
+
+def delete_invitation(invitation_id):
+    return Config.supabase.table("PendingInvitation").delete().eq("InvitationID", invitation_id).execute()

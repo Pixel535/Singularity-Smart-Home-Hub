@@ -3,7 +3,8 @@ from flask_jwt_extended import jwt_required
 
 from Backend.App.Services.house_services import get_house_data, get_house_rooms, add_room, edit_room_data, remove_room, \
     get_users_from_house, search_users_for_house_service, add_user_to_house_service, change_user_role_service, \
-    remove_user_from_house_service, change_house_pin_service
+    remove_user_from_house_service, change_house_pin_service, get_pending_invitations_service, \
+    accept_invitation_service, reject_invitation_service
 
 house_route = Blueprint("house", __name__)
 
@@ -94,4 +95,27 @@ def remove_user_from_house():
 def change_house_pin():
     data = request.get_json()
     response, status = change_house_pin_service(data)
+    return jsonify(response), status
+
+
+@house_route.route("/getInvitations", methods=["GET"])
+@jwt_required(locations=["cookies"])
+def get_invitations():
+    response, status = get_pending_invitations_service()
+    return jsonify(response), status
+
+
+@house_route.route("/acceptInvitation", methods=["POST"])
+@jwt_required(locations=["cookies"])
+def accept_invitation():
+    data = request.get_json()
+    response, status = accept_invitation_service(data)
+    return jsonify(response), status
+
+
+@house_route.route("/rejectInvitation", methods=["POST"])
+@jwt_required(locations=["cookies"])
+def reject_invitation():
+    data = request.get_json()
+    response, status = reject_invitation_service(data)
     return jsonify(response), status

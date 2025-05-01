@@ -2,9 +2,12 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from Backend.App.Models.house_model import get_house_by_user_and_house_id, get_user_house_by_userID_houseID, \
     get_rooms_by_house_id, insert_room, get_room_by_id, update_room, delete_room, get_users_assigned_to_house, \
-    delete_user_from_house, update_user_role_in_house, insert_user_into_house, get_house_pin_by_id, update_house_pin
-from Backend.App.Models.user_model import get_user_by_login, search_users_by_login_or_mail
+    delete_user_from_house, update_user_role_in_house, insert_user_into_house, get_house_pin_by_id, update_house_pin, \
+    get_pending_invitations_for_house
+from Backend.App.Models.user_model import get_user_by_login, search_users_by_login_or_mail, insert_invitation, \
+    get_pending_invitations_for_user, delete_invitation
 from Backend.App.Utils.session_helper import log_and_message_response, Statuses, get_identity_context
+from Backend.App.Utils.socket_instance import socketio
 
 
 def get_house_data(house_id):
@@ -284,10 +287,19 @@ def search_users_for_house_service(data):
 
         existing_logins = [user["UserLogin"] for user in existing_result["users"]]
 
+        pending_result = get_pending_invitations_for_house(house_id)
+        pending_logins = [
+            i["User"]["UserLogin"]
+            for i in (pending_result.data or [])
+            if i.get("User") and i["User"].get("UserLogin")
+        ]
+
         results = search_users_by_login_or_mail(query)
         filtered = [
             user for user in results.data or []
-            if user["UserLogin"] not in existing_logins and user["UserLogin"] != current_login
+            if user["UserLogin"] not in existing_logins
+                             and user["UserLogin"] not in pending_logins
+                             and user["UserLogin"] != current_login
         ]
 
         log_and_message_response("Search completed", Statuses.OK, "success")
@@ -318,7 +330,7 @@ def add_user_to_house_service(data):
 
             link = get_user_house_by_userID_houseID(user_id, house_id)
             if not link or not link.data or link.data["Role"] != "Owner":
-                return log_and_message_response("Only owner can add users", Statuses.FORBIDDEN)
+                return log_and_message_response("Only owner can invite users", Statuses.FORBIDDEN)
         except Exception as e:
             return log_and_message_response("Access check failed", Statuses.BAD_REQUEST, "error", e)
 
@@ -327,19 +339,114 @@ def add_user_to_house_service(data):
             return log_and_message_response("Access denied to this house", Statuses.FORBIDDEN)
 
     try:
-        new_user = get_user_by_login(target_login)
-        if not new_user:
-            return log_and_message_response("User to add not found", Statuses.NOT_FOUND)
+        target_user = get_user_by_login(target_login)
+        if not target_user:
+            return log_and_message_response("User to invite not found", Statuses.NOT_FOUND)
 
-        user_data = {
-            "UserID": new_user.data["UserID"],
+        target_user_id = target_user.data["UserID"]
+
+        invitation_data = {
+            "UserID": target_user_id,
             "HouseID": house_id,
-            "Role": role
+            "Role": role,
+            "SentFromHouseSession": context["is_house_session"]
         }
-        insert_user_into_house(user_data)
-        return {"msg": "User added"}, Statuses.CREATED
+
+        if context["is_user_session"]:
+            invitation_data["SenderID"] = user.data["UserID"]
+
+        insert_invitation(invitation_data)
+        socketio.emit("invitation_created", {
+            "msg": "You have a new house invitation"
+        }, to=f"user_{target_user_id}")
+        return {"msg": "Invitation has been sent!"}, Statuses.CREATED
+
     except Exception as e:
-        return log_and_message_response("Failed to add user", Statuses.BAD_REQUEST, "error", e)
+        return log_and_message_response("Failed to create invitation", Statuses.BAD_REQUEST, "error", e)
+
+
+def get_pending_invitations_service():
+    context = get_identity_context()
+
+    if not context["is_user_session"]:
+        return log_and_message_response("Invitations are available only for user session", Statuses.FORBIDDEN)
+
+    try:
+        user = get_user_by_login(context["user_login"])
+        if not user or not user.data:
+            return log_and_message_response("User not found", Statuses.NOT_FOUND)
+
+        result = get_pending_invitations_for_user(user.data["UserID"])
+        raw = result.data or []
+
+        invitations = [{
+            "InvitationID": row["InvitationID"],
+            "HouseID": row["HouseID"],
+            "HouseName": row["House"]["HouseName"],
+            "Role": row["Role"],
+            "SenderLogin": row["Sender"]["UserLogin"] if not row["SentFromHouseSession"] else None,
+            "SentFromHouseSession": row["SentFromHouseSession"]
+        } for row in raw]
+
+        return {"invitations": invitations}, Statuses.OK
+
+    except Exception as e:
+        return log_and_message_response("Failed to fetch invitations", Statuses.BAD_REQUEST, "error", e)
+
+
+def accept_invitation_service(data):
+    context = get_identity_context()
+    invitation_id = data.get("InvitationID")
+
+    if not context["is_user_session"]:
+        return log_and_message_response("Only user session can accept invitations", Statuses.FORBIDDEN)
+
+    if not invitation_id:
+        return log_and_message_response("Missing invitation ID", Statuses.BAD_REQUEST)
+
+    try:
+        user = get_user_by_login(context["user_login"])
+        if not user:
+            return log_and_message_response("User not found", Statuses.NOT_FOUND)
+
+        user_id = user.data["UserID"]
+        invitations = get_pending_invitations_for_user(user_id).data or []
+        matching = [i for i in invitations if i["InvitationID"] == invitation_id]
+
+        if not matching:
+            return log_and_message_response("Invitation not found", Statuses.NOT_FOUND)
+
+        invitation = matching[0]
+
+        insert_user_into_house({
+            "UserID": user_id,
+            "HouseID": invitation["HouseID"],
+            "Role": invitation["Role"]
+        })
+
+        delete_invitation(invitation_id)
+        return {"msg": "Invitation accepted"}, Statuses.OK
+
+    except Exception as e:
+        return log_and_message_response("Failed to accept invitation", Statuses.BAD_REQUEST, "error", e)
+
+
+def reject_invitation_service(data):
+    context = get_identity_context()
+    invitation_id = data.get("InvitationID")
+
+    if not context["is_user_session"]:
+        return log_and_message_response("Only user session can reject invitations", Statuses.FORBIDDEN)
+
+    if not invitation_id:
+        return log_and_message_response("Missing invitation ID", Statuses.BAD_REQUEST)
+
+    try:
+        delete_invitation(invitation_id)
+        return {"msg": "Invitation rejected"}, Statuses.OK
+
+    except Exception as e:
+        return log_and_message_response("Failed to reject invitation", Statuses.BAD_REQUEST, "error", e)
 
 
 def change_user_role_service(data):

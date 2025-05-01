@@ -125,3 +125,9 @@ def update_house_pin(house_id, hashed_pin):
     except Exception as e:
         return log_and_message_response("Failed to update PIN", Statuses.BAD_REQUEST, "error", e)
 
+
+def get_pending_invitations_for_house(house_id):
+    try:
+        return Config.supabase.table("PendingInvitation").select("UserID, User!pendinginvitation_senderid_fkey(UserLogin)").eq("HouseID", house_id).execute()
+    except Exception as e:
+        return log_and_message_response("Failed to get pending invitations", Statuses.BAD_REQUEST, "error", e)

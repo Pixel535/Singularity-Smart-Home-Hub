@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { map, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -134,5 +135,13 @@ export class AuthService {
   
   public isHouseSession(): boolean {
     return this.sessionType === 'house';
+  }
+
+  public fetchAccessToken(): Observable<string> {
+    return this.http.get<{ access_token: string }>(`${this.baseUrl}/token`, {
+      withCredentials: true
+    }).pipe(
+      map(res => res.access_token)
+    );
   }
 }

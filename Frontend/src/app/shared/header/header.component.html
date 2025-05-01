@@ -30,6 +30,35 @@
       ></p-avatar>
     </div>
 
+    <div class="notification-wrapper" *ngIf="checkIsUserSession()">
+      <p-avatar icon="pi pi-bell" class="notification-avatar" (click)="toggleNotifications()"></p-avatar>
+      <div class="notification-count" *ngIf="notifications.length > 0">{{ notifications.length }}</div>
+    
+      <div class="notification-list" *ngIf="showNotificationList">
+        <ng-container *ngIf="notifications.length > 0; else noNotifications">
+          <div class="notification-item" *ngFor="let invite of notifications">
+            <div class="text">
+              <ng-container *ngIf="invite.SenderLogin; else genericText">
+                {{ invite.SenderLogin }} invited you to their house: <b>{{ invite.HouseName }}</b>
+              </ng-container>
+              <ng-template #genericText>
+                You have been invited to house: <b>{{ invite.HouseName }}</b>
+              </ng-template>
+            </div>
+            <div class="actions">
+              <button (click)="acceptInvitation(invite.InvitationID)">Accept</button>
+              <button (click)="rejectInvitation(invite.InvitationID)">Reject</button>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noNotifications>
+          <div class="notification-empty">
+            No notifications yet!
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
     <div class="user-menu-wrapper">
       <p-tieredMenu
         [model]="menuItems"

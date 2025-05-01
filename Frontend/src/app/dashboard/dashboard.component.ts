@@ -18,6 +18,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { environment } from '../../environments/environment';
+import { InvitationService } from '../shared/invitation/invitation.service'
 
 @Component({
   standalone: true,
@@ -50,6 +51,7 @@ export class DashboardComponent implements OnInit {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
+  private invitationService = inject(InvitationService);
 
   userLogin: string | null = null;
   houses: any[] = [];
@@ -86,6 +88,9 @@ export class DashboardComponent implements OnInit {
         Validators.required,
         Validators.pattern(/^\d{6}$/)
       ]]
+    });
+    this.invitationService.onInvitationChanged().subscribe(() => {
+      this.fetchHouses();
     });
   }
 

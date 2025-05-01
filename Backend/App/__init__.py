@@ -1,6 +1,9 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+
+from Backend.App.Sockets.sockets import register_socket_events
+from Backend.App.Utils.socket_instance import socketio
 from Backend.App.config import Config
 
 jwt = JWTManager()
@@ -30,5 +33,7 @@ def create_app():
     app.register_blueprint(house_route, url_prefix="/house")
     app.register_blueprint(room_route, url_prefix="/house/room")
     app.register_blueprint(speech_route, url_prefix="/speech")
+
+    register_socket_events(socketio)
 
     return app
