@@ -1,3 +1,4 @@
+from flask_socketio import leave_room
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from Backend.App.Models.house_model import get_house_by_user_and_house_id, get_user_house_by_userID_houseID, \
@@ -425,6 +426,7 @@ def accept_invitation_service(data):
         })
 
         delete_invitation(invitation_id)
+        socketio.start_background_task(lambda: leave_room(f"user_{user_id}"))
         return {"msg": "Invitation accepted"}, Statuses.OK
 
     except Exception as e:
@@ -443,6 +445,8 @@ def reject_invitation_service(data):
 
     try:
         delete_invitation(invitation_id)
+        user_id = context["user_login"]
+        socketio.start_background_task(lambda: leave_room(f"user_{user_id}"))
         return {"msg": "Invitation rejected"}, Statuses.OK
 
     except Exception as e:
