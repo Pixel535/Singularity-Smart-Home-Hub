@@ -1,9 +1,7 @@
 import logging
-
 from flask_socketio import join_room, disconnect
 from flask_jwt_extended import decode_token
 from Backend.App.Models.user_model import get_user_by_login
-from Backend.App.Utils.socket_instance import socketio
 
 logger = logging.getLogger(__name__)
 

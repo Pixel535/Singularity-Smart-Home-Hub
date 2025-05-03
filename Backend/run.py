@@ -1,6 +1,8 @@
 from App import create_app
 from Backend.App.Utils.socket_instance import socketio
+import logging
 
+logging.basicConfig(level=logging.INFO)
 app = create_app()
 
 if __name__ == '__main__':
