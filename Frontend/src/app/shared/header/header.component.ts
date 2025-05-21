@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../auth/auth.service';
 import { InvitationService } from '../../shared/invitation/invitation.service';
-
 import { io, Socket } from 'socket.io-client';
 import { CommonModule } from '@angular/common';
 import { MenubarModule } from 'primeng/menubar';
@@ -32,6 +31,10 @@ export class HeaderComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isInsideHouse = false;
   @Input() houseId: number | null = null;
   @Input() userLogin: string | null = null;
+  @Input() weather: any = null;
+  @Input() news: any[] = [];
+
+  newsVisible = false;
 
   constructor(
     private auth: AuthService,
@@ -97,7 +100,11 @@ export class HeaderComponent implements OnInit, OnChanges, OnDestroy {
               icon: 'pi pi-info-circle',
               command: () =>
                 this.router.navigate(['/house/info'], {
-                  state: { houseId: this.houseId }
+                  state: { 
+                    houseId: this.houseId,
+                    weather: this.weather,
+                    news: this.news 
+                  }
                 })
             }
           ]
@@ -206,4 +213,9 @@ export class HeaderComponent implements OnInit, OnChanges, OnDestroy {
         this.invitationService.notifyInvitationRejected();
       });
   }
+
+    openInNewTab(url: string) {
+    window.open(url, '_blank', 'noopener');
+  }
+
 }

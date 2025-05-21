@@ -6,6 +6,10 @@
   </ng-template>
 
   <ng-template pTemplate="end">
+    <div class="header-center-content" *ngIf="isInsideHouse && weather">
+      Today's weather is: {{ weather.main.temp }}°C, {{ weather.weather[0].description }}
+    </div>
+
     <span class="welcome-text">
       <ng-container *ngIf="isInsideHouse; else userGreeting">
         Welcome in {{ houseName || '...' }}!
@@ -14,6 +18,15 @@
         Welcome, {{ userLogin || '...' }}!
       </ng-template>
     </span>
+
+    <div class="news-menu-wrapper" *ngIf="isInsideHouse">
+      <p-avatar
+        icon="pi pi-book"
+        class="news-avatar"
+        (click)="newsVisible = true"
+        tooltip="News"
+      ></p-avatar>
+    </div>
 
     <div class="house-menu-wrapper" *ngIf="isInsideHouse">
       <p-tieredMenu
@@ -75,3 +88,35 @@
     </div>
   </ng-template>
 </p-menubar>
+
+<div class="overlay" *ngIf="newsVisible" (click)="newsVisible = false">
+  <div class="form-card" (click)="$event.stopPropagation()">
+    <button class="close-button pi pi-times" (click)="newsVisible = false"></button>
+
+    <div class="form-header">
+      <p class="subtitle">News</p>
+    </div>
+
+    <div class="news-list">
+      <div class="news-item" *ngFor="let article of news">
+        <p class="news-title">{{ article.title }}</p>
+        <p class="news-description" *ngIf="article.description">{{ article.description }}</p>
+            
+        <div class="go-to-article-container">
+          <button
+            pButton
+            label="Go To Article"
+            class="go-to-article-button"
+            (click)="openInNewTab(article.url)">
+          </button>
+        </div>
+
+      </div>
+
+
+      <div *ngIf="news.length === 0" class="empty-news">
+        No news available.
+      </div>
+    </div>
+  </div>
+</div>

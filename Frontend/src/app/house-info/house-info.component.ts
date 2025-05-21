@@ -54,6 +54,9 @@ export class HouseInfoComponent implements OnInit {
   isEditing = false;
   showDeleteConfirm = false;
 
+  weather: any = null;
+  news: any[] = [];
+
   houseForm!: FormGroup;
   countries = COUNTRIES;
 
@@ -71,6 +74,8 @@ export class HouseInfoComponent implements OnInit {
       return;
     }
     this.houseId = state.houseId;
+    this.weather = state.weather || null;
+    this.news = state.news || [];
 
     Promise.all([this.loadHouse(), this.loadUsers()]).then(() => {
       this.loading = false;

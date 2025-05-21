@@ -36,6 +36,9 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
   roomId!: number;
   roomName = '';
 
+  weather: any = null;
+  news: any[] = [];
+  
   loading = true;
 
   get isLoaded(): boolean {
@@ -57,6 +60,8 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
       this.roomId = state.roomId;
       this.houseId = state.houseId;
       this.loadRoomData();
+      this.weather = state.weather || null;
+      this.news = state.news || [];
 
       this.http.post<{ HouseName: string }>(
         `${environment.apiBaseUrl}/house/getHouse`,

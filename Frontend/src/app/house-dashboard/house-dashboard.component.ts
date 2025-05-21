@@ -60,6 +60,9 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
   rooms: any[] = [];
   devices: any[] = [];
 
+  weather: any = null;
+  news: any[] = [];
+
   showAddForm = false;
   addRoomForm!: FormGroup;
 
@@ -272,6 +275,7 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.houseName = res.HouseName;
           this.userRole = res.Role;
+          this.fetchExternalData(res.City, res.Country, res.CountryCode);
           this.loadRooms();
         },
         error: err => {
@@ -309,7 +313,22 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/house/room/dashboard'], {
       state: {
         roomId,
-        houseId: this.houseId
+        houseId: this.houseId,
+        weather: this.weather,
+        news: this.news
+      }
+    });
+  }
+
+  fetchExternalData(city: string, country: string, countryCode: string) {
+  this.http.post<any>(`${this.baseUrl}/externalData`, { City: city, Country: country, CountryCode: countryCode }, { withCredentials: true })
+    .subscribe({
+      next: (res) => {
+        this.weather = res.weather;
+        this.news = res.news?.articles || [];
+      },
+      error: (err) => {
+        console.error("Failed to fetch weather/news", err);
       }
     });
   }
