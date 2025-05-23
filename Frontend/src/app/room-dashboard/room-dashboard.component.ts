@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, inject, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -23,7 +23,7 @@ import { environment } from '../../environments/environment';
   ],
   providers: [MessageService]
 })
-export class RoomDashboardComponent implements OnInit, AfterViewInit {
+export class RoomDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private http = inject(HttpClient);
@@ -38,7 +38,11 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
 
   weather: any = null;
   news: any[] = [];
-  
+  city = '';
+  country = '';
+  countryCode = '';
+  private externalDataInterval: any;
+
   loading = true;
 
   get isLoaded(): boolean {
@@ -60,17 +64,24 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
       this.roomId = state.roomId;
       this.houseId = state.houseId;
       this.loadRoomData();
-      this.weather = state.weather || null;
-      this.news = state.news || [];
 
-      this.http.post<{ HouseName: string }>(
+      this.http.post<any>(
         `${environment.apiBaseUrl}/house/getHouse`,
         { HouseID: this.houseId },
         { withCredentials: true }
       ).subscribe({
-        next: res => this.houseName = res.HouseName,
-        error: () => this.houseName = ''
+        next: res => {
+          this.houseName = res.HouseName;
+          this.city = res.City;
+          this.country = res.Country;
+          this.countryCode = res.CountryCode;
+          this.scheduleExternalDataFetch();
+        },
+        error: () => {
+          this.houseName = '';
+        }
       });
+
     } else {
       this.messageService.add({
         severity: 'error',
@@ -79,6 +90,10 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
       });
       this.router.navigate(['/dashboard']);
     }
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.externalDataInterval);
   }
 
   ngAfterViewInit(): void {
@@ -136,6 +151,33 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
   goBackToHouseDashboard() {
     this.router.navigate(['/house/dashboard'], {
       state: { houseId: this.houseId }
+    });
+  }
+
+  private scheduleExternalDataFetch() {
+    this.fetchExternalData();
+    this.externalDataInterval = setInterval(() => {
+      this.fetchExternalData();
+    }, 1 * 60 * 1000); // 15 min
+  }
+
+  private fetchExternalData() {
+    const payload = {
+      City: this.city,
+      Country: this.country,
+      CountryCode: this.countryCode
+    };
+
+    this.http.post<any>(`${environment.apiBaseUrl}/house/externalData`, payload, {
+      withCredentials: true
+    }).subscribe({
+      next: (res) => {
+        this.weather = res.weather;
+        this.news = res.news?.articles || [];
+      },
+      error: (err) => {
+        console.error('Failed to fetch weather/news', err);
+      }
     });
   }
 }

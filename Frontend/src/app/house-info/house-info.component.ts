@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -36,7 +36,7 @@ import { environment } from '../../environments/environment';
   ],
   providers: [MessageService]
 })
-export class HouseInfoComponent implements OnInit {
+export class HouseInfoComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private http = inject(HttpClient);
   private auth = inject(AuthService);
@@ -57,6 +57,11 @@ export class HouseInfoComponent implements OnInit {
   weather: any = null;
   news: any[] = [];
 
+  city = '';
+  country = '';
+  countryCode = '';
+  private externalDataInterval: any;
+
   houseForm!: FormGroup;
   countries = COUNTRIES;
 
@@ -74,12 +79,14 @@ export class HouseInfoComponent implements OnInit {
       return;
     }
     this.houseId = state.houseId;
-    this.weather = state.weather || null;
-    this.news = state.news || [];
 
     Promise.all([this.loadHouse(), this.loadUsers()]).then(() => {
       this.loading = false;
     });
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.externalDataInterval);
   }
 
   isOwner(): boolean {
@@ -94,7 +101,11 @@ export class HouseInfoComponent implements OnInit {
           next: (res) => {
             this.houseData = res;
             this.userRole = res.Role;
+            this.city = res.City;
+            this.country = res.Country;
+            this.countryCode = res.CountryCode;
             this.initForm();
+            this.scheduleExternalDataFetch();
             resolve();
           },
           error: (err) => {
@@ -106,7 +117,7 @@ export class HouseInfoComponent implements OnInit {
         });
     });
   }
-  
+
   private loadUsers(): Promise<void> {
     return new Promise((resolve) => {
       this.http
@@ -121,6 +132,33 @@ export class HouseInfoComponent implements OnInit {
             resolve();
           }
         });
+    });
+  }
+
+  private scheduleExternalDataFetch() {
+    this.fetchExternalData();
+    this.externalDataInterval = setInterval(() => {
+      this.fetchExternalData();
+    }, 1 * 60 * 1000);
+  }
+
+  private fetchExternalData() {
+    const payload = {
+      City: this.city,
+      Country: this.country,
+      CountryCode: this.countryCode
+    };
+
+    this.http.post<any>(`${this.houseBase}/externalData`, payload, {
+      withCredentials: true
+    }).subscribe({
+      next: (res) => {
+        this.weather = res.weather;
+        this.news = res.news?.articles || [];
+      },
+      error: (err) => {
+        console.error('Failed to fetch weather/news', err);
+      }
     });
   }
 
@@ -153,7 +191,6 @@ export class HouseInfoComponent implements OnInit {
       HouseID: this.houseId,
       ...this.houseForm.value
     };
-
 
     this.http.put(`${this.dashBase}/editHouse`, payload, {
       withCredentials: true
@@ -244,7 +281,7 @@ export class HouseInfoComponent implements OnInit {
       }
     });
   }
-  
+
   canDelete(): boolean {
     return this.auth.isUserSession() && this.userRole === 'Owner';
   }

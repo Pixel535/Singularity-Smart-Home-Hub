@@ -62,7 +62,11 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
 
   weather: any = null;
   news: any[] = [];
-
+  city = '';
+  country = '';
+  countryCode = '';
+  private externalDataInterval: any;
+  
   showAddForm = false;
   addRoomForm!: FormGroup;
 
@@ -106,7 +110,9 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     });
   }
   
-  
+  ngOnDestroy(): void {
+    clearInterval(this.externalDataInterval);
+  }
   
   isOwner(): boolean {
     return this.auth.isHouseSession() || this.userRole === 'Owner';
@@ -275,7 +281,10 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.houseName = res.HouseName;
           this.userRole = res.Role;
-          this.fetchExternalData(res.City, res.Country, res.CountryCode);
+          this.city = res.City;
+          this.country = res.Country;
+          this.countryCode = res.CountryCode;
+          this.scheduleExternalDataFetch();
           this.loadRooms();
         },
         error: err => {
@@ -313,15 +322,26 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/house/room/dashboard'], {
       state: {
         roomId,
-        houseId: this.houseId,
-        weather: this.weather,
-        news: this.news
+        houseId: this.houseId
       }
     });
   }
 
-  fetchExternalData(city: string, country: string, countryCode: string) {
-  this.http.post<any>(`${this.baseUrl}/externalData`, { City: city, Country: country, CountryCode: countryCode }, { withCredentials: true })
+  private scheduleExternalDataFetch() {
+    this.fetchExternalData(); 
+    this.externalDataInterval = setInterval(() => {
+      this.fetchExternalData();
+    }, 1 * 60 * 1000);
+  }
+
+  fetchExternalData() {
+    const payload = {
+    City: this.city,
+    Country: this.country,
+    CountryCode: this.countryCode
+  };
+
+  this.http.post<any>(`${this.baseUrl}/externalData`, payload, { withCredentials: true })
     .subscribe({
       next: (res) => {
         this.weather = res.weather;
