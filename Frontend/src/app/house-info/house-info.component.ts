@@ -139,7 +139,7 @@ export class HouseInfoComponent implements OnInit, OnDestroy {
     this.fetchExternalData();
     this.externalDataInterval = setInterval(() => {
       this.fetchExternalData();
-    }, 1 * 60 * 1000);
+    }, 15 * 60 * 1000);
   }
 
   private fetchExternalData() {

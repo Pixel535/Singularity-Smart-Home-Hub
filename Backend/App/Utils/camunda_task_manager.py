@@ -1,7 +1,4 @@
 import pycamunda.externaltask
-import time
-import requests
-
 from Backend.App.Utils.camunda_task_handler import get_api_data, handle_default, open_window, close_window, \
     open_solar_panel, close_solar_panel, mist_light_on, mist_light_off
 from Backend.App.Utils.session_helper import log_and_message_response, Statuses

@@ -158,7 +158,7 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.fetchExternalData();
     this.externalDataInterval = setInterval(() => {
       this.fetchExternalData();
-    }, 1 * 60 * 1000); // 15 min
+    }, 15 * 60 * 1000); // 15 min
   }
 
   private fetchExternalData() {

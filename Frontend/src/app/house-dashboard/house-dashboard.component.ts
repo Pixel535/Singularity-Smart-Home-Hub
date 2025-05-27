@@ -331,7 +331,7 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     this.fetchExternalData(); 
     this.externalDataInterval = setInterval(() => {
       this.fetchExternalData();
-    }, 1 * 60 * 1000);
+    }, 15 * 60 * 1000);
   }
 
   fetchExternalData() {
@@ -346,6 +346,8 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
       next: (res) => {
         this.weather = res.weather;
         this.news = res.news?.articles || [];
+        console.log(this.weather);
+        console.log(this.news);
       },
       error: (err) => {
         console.error("Failed to fetch weather/news", err);
