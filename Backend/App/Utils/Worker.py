@@ -80,3 +80,15 @@ def manage_tasks():
         return api_result, Statuses.OK
     except Exception as e:
         return log_and_message_response("Failed to manage Camunda", Statuses.BAD_REQUEST, "error", e)
+
+
+# Główna pętla
+
+
+if __name__ == '__main__':
+    while True:
+        try:
+            manage_tasks()
+        except requests.exceptions.RequestException as e:
+            print(f"Błąd połączenia z Camundą: {e}")
+        time.sleep(2)

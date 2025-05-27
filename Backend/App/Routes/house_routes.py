@@ -127,6 +127,7 @@ def reject_invitation():
 @house_route.route("/externalData", methods=["POST"])
 @jwt_required(locations=["cookies"])
 def get_external_data():
+    print("test1")
     data = request.get_json()
     city = data.get("City")
     country = data.get("Country")
@@ -137,4 +138,6 @@ def get_external_data():
         return jsonify(result), status
 
     result, error = manage_tasks()
+    print("test2")
+    print(result)
     return jsonify(result), status
