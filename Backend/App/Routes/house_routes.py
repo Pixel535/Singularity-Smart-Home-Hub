@@ -5,7 +5,8 @@ from Backend.App.Services.house_services import get_house_data, get_house_rooms,
     get_users_from_house, search_users_for_house_service, add_user_to_house_service, change_user_role_service, \
     remove_user_from_house_service, change_house_pin_service, get_pending_invitations_service, \
     accept_invitation_service, reject_invitation_service
-from Backend.App.Utils.ESB_Caller import get_weather_and_news_data
+from Backend.App.Utils.camunda_caller import start_camunda
+from Backend.App.Utils.camunda_task_manager import manage_tasks
 from Backend.App.Utils.session_helper import Statuses
 
 house_route = Blueprint("house", __name__)
@@ -130,5 +131,10 @@ def get_external_data():
     city = data.get("City")
     country = data.get("Country")
     country_code = data.get("CountryCode")
-    result, status = get_weather_and_news_data(city=city, country=country, country_code=country_code)
+
+    result, status = start_camunda(city=city, country=country, country_code=country_code)
+    if status != Statuses.OK:
+        return jsonify(result), status
+
+    result, error = manage_tasks()
     return jsonify(result), status
