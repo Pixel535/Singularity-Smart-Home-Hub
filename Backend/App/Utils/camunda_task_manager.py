@@ -1,6 +1,5 @@
 import pycamunda.externaltask
-from Backend.App.Utils.camunda_task_handler import get_api_data, handle_default, open_window, close_window, \
-    open_solar_panel, close_solar_panel, mist_light_on, mist_light_off
+from Backend.App.Utils.camunda_task_handler import get_api_data, handle_default
 from Backend.App.Utils.session_helper import log_and_message_response, Statuses
 
 ENGINE_URL = 'http://localhost:8080/engine-rest'
@@ -8,22 +7,10 @@ WORKER_ID = 'python-worker'
 LOCK_DURATION = 10000
 POLL_TIMEOUT_MS = 5000
 TOPICS = [
-    'ApiTransfer',
-    'OpenWindow',
-    'CloseWindow,'
-    'OpenSolarPanel',
-    'CloseSolarPanel',
-    'MistLightOn',
-    'MistLightOff'
+    'ApiTransfer'
 ]
 TOPIC_HANDLERS = {
-    'ApiTransfer': get_api_data,
-    'OpenWindow': open_window,
-    'CloseWindow': close_window,
-    'OpenSolarPanel': open_solar_panel,
-    'CloseSolarPanel': close_solar_panel,
-    'MistLightOn': mist_light_on,
-    'MistLightOff': mist_light_off
+    'ApiTransfer': get_api_data
 }
 
 def manage_tasks():
