@@ -101,6 +101,9 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     this.addRoomForm = this.fb.group({
       RoomName: ['', Validators.required]
     });
+    this.speech.onCommand().subscribe(command => {
+      this.handleSpeechCommand(command);
+    });
   }
   
   
@@ -314,4 +317,71 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
+  normalizeNumberWords(text: string): string {
+    const numbersMap: { [key: string]: string } = {
+      'zero': '0',
+      'one': '1',
+      'two': '2',
+      'three': '3',
+      'four': '4',
+      'five': '5',
+      'six': '6',
+      'seven': '7',
+      'eight': '8',
+      'nine': '9'
+    };
+
+    const parts = text.split(' ');
+    const result: string[] = [];
+    let numberBuffer = '';
+
+    for (const word of parts) {
+      if (word in numbersMap) {
+        numberBuffer += numbersMap[word];
+      } else {
+        if (numberBuffer.length) {
+          result.push(numberBuffer);
+          numberBuffer = '';
+        }
+        result.push(word);
+      }
+    }
+
+    if (numberBuffer.length) {
+      result.push(numberBuffer);
+    }
+
+    return result.join(' ');
+  }
+
+  handleSpeechCommand(command: string): void {
+    const lower = command.toLowerCase().trim();
+
+    if (lower === 'add room' || lower === 'new room' || lower === 'add new room') {
+      this.toggleAddForm();
+      return;
+    }
+
+    if (lower.startsWith('go to room')) {
+      let spokenName = lower.replace('go to room', '').trim();
+      spokenName = this.normalizeNumberWords(spokenName);
+      spokenName = 'Room ' + spokenName;
+
+      const matched = this.rooms.find(r =>
+        r.RoomName === spokenName
+      );
+
+      if (matched) {
+        this.goToRoom(matched.RoomID);
+      } else {
+        this.playTTS(`Sorry, I couldn't find room named ${spokenName}`);
+      }
+    }
+  }
+
+  playTTS(text: string): void {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+  }
 }

@@ -19,6 +19,7 @@ import { MessageService } from 'primeng/api';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { environment } from '../../environments/environment';
 import { InvitationService } from '../shared/invitation/invitation.service'
+import { SpeechService } from '../speech/speech.service';
 
 @Component({
   standalone: true,
@@ -52,6 +53,7 @@ export class DashboardComponent implements OnInit {
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
   private invitationService = inject(InvitationService);
+  private speech = inject(SpeechService);
 
   userLogin: string | null = null;
   houses: any[] = [];
@@ -91,6 +93,10 @@ export class DashboardComponent implements OnInit {
     });
     this.invitationService.onInvitationChanged().subscribe(() => {
       this.fetchHouses();
+    });
+
+    this.speech.onCommand().subscribe(command => {
+      this.handleSpeechCommand(command);
     });
   }
 
@@ -267,4 +273,74 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  handleSpeechCommand(command: string): void {
+    const lower = command.toLowerCase().trim();
+
+    if (lower === 'new house' || lower === 'add house') {
+      this.toggleAddForm();
+      return;
+    }
+
+    if (lower.startsWith('go to house')) {
+      var spokenName = lower.replace('go to house', '').trim();
+      spokenName = this.normalizeNumberWords(spokenName);
+      spokenName = "House " + spokenName;
+      console.log("SPOKEN NAME: " + spokenName);
+
+      const matched = this.houses.find(h =>
+        h.HouseName === spokenName
+      );
+      console.log("MATCHED: " + matched);
+
+      if (matched) {
+        this.goToHouseDashboard(matched.HouseID);
+      } else {
+        this.playTTS(`Sorry, I couldn't find house named ${spokenName}`);
+      }
+    }
+  }
+
+  playTTS(text: string): void {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+  }
+
+  normalizeNumberWords(text: string): string {
+    const numbersMap: { [key: string]: string } = {
+      'zero': '0',
+      'one': '1',
+      'two': '2',
+      'three': '3',
+      'four': '4',
+      'five': '5',
+      'six': '6',
+      'seven': '7',
+      'eight': '8',
+      'nine': '9'
+    };
+
+    const parts = text.split(' ');
+    const result: string[] = [];
+
+    let numberBuffer = '';
+
+    for (const word of parts) {
+      if (word in numbersMap) {
+        numberBuffer += numbersMap[word];
+      } else {
+        if (numberBuffer.length) {
+          result.push(numberBuffer);
+          numberBuffer = '';
+        }
+        result.push(word);
+      }
+    }
+
+    if (numberBuffer.length) {
+      result.push(numberBuffer);
+    }
+
+    return result.join(' ');
+  }
 }

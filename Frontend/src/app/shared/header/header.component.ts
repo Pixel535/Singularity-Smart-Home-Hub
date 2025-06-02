@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../auth/auth.service';
 import { InvitationService } from '../../shared/invitation/invitation.service';
-
+import { SpeechListenerService } from '../../speech/speech-listener.service';
 import { io, Socket } from 'socket.io-client';
 import { CommonModule } from '@angular/common';
 import { MenubarModule } from 'primeng/menubar';
@@ -12,6 +12,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { TieredMenuModule } from 'primeng/tieredmenu';
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
+import { SpeechService } from '../../speech/speech.service';
 
 @Component({
   selector: 'app-header',
@@ -34,11 +35,13 @@ export class HeaderComponent implements OnInit, OnChanges, OnDestroy {
   @Input() userLogin: string | null = null;
 
   constructor(
-    private auth: AuthService,
-    private router: Router,
-    private http: HttpClient,
-    private invitationService: InvitationService
-  ) {}
+  private auth: AuthService,
+  private router: Router,
+  private http: HttpClient,
+  private invitationService: InvitationService,
+  private speech: SpeechService,
+  private listener: SpeechListenerService
+) {}
 
   menuItems: any[] = [];
   houseMenuItems: any[] = [];
@@ -54,6 +57,13 @@ export class HeaderComponent implements OnInit, OnChanges, OnDestroy {
         this.loadNotifications();
       });
     }
+    this.listener.startListening();
+
+    this.speech.onCommand().subscribe((command: string) => {
+      if (command === 'logout' || command === 'log out') {
+        this.logout();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -136,6 +146,7 @@ export class HeaderComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   logout() {
+    this.listener.stopListening();
     this.auth.logout();
   }
 
