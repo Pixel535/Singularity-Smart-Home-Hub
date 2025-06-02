@@ -59,6 +59,7 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
   
   rooms: any[] = [];
   devices: any[] = [];
+pendingDeleteRoomName: string | null = null;
 
   showAddForm = false;
   addRoomForm!: FormGroup;
@@ -66,6 +67,8 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
   activeTab: 'rooms' | 'devices' | 'functions' = 'rooms';
   showDeleteConfirm = false;
   selectedRoomToDelete: any = null;
+  voiceWizardActive = false;
+  waitingForRoomSubmissionConfirm = false;
 
   baseUrl = `${environment.apiBaseUrl}/house`;
 
@@ -102,8 +105,13 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
       RoomName: ['', Validators.required]
     });
     this.speech.onCommand().subscribe(command => {
-      this.handleSpeechCommand(command);
+      if (this.voiceWizardActive) {
+        this.handleRoomWizardResponse(command);
+      } else {
+        this.handleSpeechCommand(command);
+      }
     });
+
   }
   
   
@@ -168,10 +176,14 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     this.showAddForm = !this.showAddForm;
   
     if (!this.showAddForm) {
+      this.voiceWizardActive = false;
+      this.waitingForRoomSubmissionConfirm = false;
       this.addRoomForm.reset();
       this.isEditing = false;
       this.editingRoomId = null;
+      return;
     }
+
   }
 
   isInvalid(fieldName: string): boolean {
@@ -354,34 +366,127 @@ export class HouseDashboardComponent implements OnInit, AfterViewInit {
     return result.join(' ');
   }
 
-  handleSpeechCommand(command: string): void {
-    const lower = command.toLowerCase().trim();
+handleSpeechCommand(command: string): void {
+  const lower = command.toLowerCase().trim();
 
-    if (lower === 'add room' || lower === 'new room' || lower === 'add new room') {
-      this.toggleAddForm();
-      return;
+  if (this.pendingDeleteRoomName && (lower === 'yes' || lower === 'no')) {
+    if (lower === 'yes' && this.selectedRoomToDelete) {
+      this.acceptDeleteRoom();
+    } else {
+      this.playTTS('Okay, cancelled.');
+      this.cancelDeleteRoom();
     }
-
-    if (lower.startsWith('go to room')) {
-      let spokenName = lower.replace('go to room', '').trim();
-      spokenName = this.normalizeNumberWords(spokenName);
-      spokenName = 'Room ' + spokenName;
-
-      const matched = this.rooms.find(r =>
-        r.RoomName === spokenName
-      );
-
-      if (matched) {
-        this.goToRoom(matched.RoomID);
-      } else {
-        this.playTTS(`Sorry, I couldn't find room named ${spokenName}`);
-      }
-    }
+    this.pendingDeleteRoomName = null;
+    return;
   }
+
+  if (lower === 'add room' || lower === 'new room' || lower === 'add new room') {
+    this.toggleAddForm();
+    setTimeout(() => this.startRoomWizard(), 500);
+    return;
+  }
+
+  if (lower === 'close form' || lower === 'cancel') {
+    if (this.showAddForm) {
+      this.playTTS('Closing the form');
+      this.toggleAddForm();
+    } else {
+      this.playTTS('The form is already closed');
+    }
+    return;
+  }
+
+  if (lower.startsWith('go to room')) {
+    let spokenName = lower.replace('go to room', '').trim();
+    spokenName = this.normalizeNumberWords(spokenName).toLowerCase();
+
+    const matched = this.rooms.find(r =>
+      this.normalizeNumberWords(r.RoomName.toLowerCase()) === spokenName
+    );
+
+    if (matched) {
+      this.goToRoom(matched.RoomID);
+    } else {
+      this.playTTS(`Sorry, I couldn't find room named ${spokenName}`);
+    }
+    return;
+  }
+
+  if (lower.startsWith('delete room')) {
+    let spokenName = lower.replace('delete room', '').trim();
+    spokenName = this.normalizeNumberWords(spokenName).toLowerCase();
+
+    const matched = this.rooms.find(r =>
+      this.normalizeNumberWords(r.RoomName.toLowerCase()) === spokenName
+    );
+
+    if (matched) {
+      this.confirmDeleteRoom(matched);
+      this.playTTS(`Are you sure you want to delete room ${matched.RoomName}? Say yes or no.`);
+      this.pendingDeleteRoomName = matched.RoomName;
+    } else {
+      this.playTTS(`Sorry, I couldn't find room named ${spokenName}`);
+    }
+    return;
+  }
+}
+
 
   playTTS(text: string): void {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
     window.speechSynthesis.speak(utterance);
   }
+
+  startRoomWizard(): void {
+    this.voiceWizardActive = true;
+    this.playTTS('What is the name of the room?');
+  }
+
+  handleRoomWizardResponse(response: string): void {
+  const lower = response.toLowerCase().trim();
+  if (lower === 'close form' || lower === 'cancel') {
+    if (this.showAddForm) {
+      this.voiceWizardActive = false;
+      this.waitingForRoomSubmissionConfirm = false;
+      this.playTTS('Closing the form');
+      this.toggleAddForm();
+    } else {
+      this.playTTS('The form is already closed');
+    }
+    return;
+  }
+
+  if (this.waitingForRoomSubmissionConfirm) {
+    if (lower === 'yes') {
+      this.waitingForRoomSubmissionConfirm = false;
+      this.voiceWizardActive = false;
+      this.submitAddRoom();
+    } else if (lower === 'no') {
+      this.waitingForRoomSubmissionConfirm = false;
+      this.voiceWizardActive = false;
+      this.playTTS('Okay, the form is ready to submit manually.');
+    } else {
+      this.playTTS('Please say yes or no.');
+    }
+    return;
+  }
+
+  if (lower === 'yes') {
+    this.waitingForRoomSubmissionConfirm = true;
+    this.playTTS('Do you want to submit the room?');
+    return;
+  }
+
+  if (lower === 'no') {
+    this.playTTS('What is the name of the room?');
+    return;
+  }
+
+  const control = this.addRoomForm.get('RoomName');
+  if (control) {
+    control.setValue(response);
+    this.playTTS('Can we move to next one?');
+  }
+}
 }

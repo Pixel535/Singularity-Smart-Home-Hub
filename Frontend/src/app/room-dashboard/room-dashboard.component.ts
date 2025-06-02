@@ -8,6 +8,7 @@ import { HeaderComponent } from '../shared/header/header.component';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
 import { environment } from '../../environments/environment';
+import { SpeechService } from '../speech/speech.service';
 
 @Component({
   selector: 'app-room-dashboard',
@@ -30,6 +31,7 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
   private auth = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private messageService = inject(MessageService);
+  private speech = inject(SpeechService);
 
   houseId!: number;
   houseName = '';
@@ -74,6 +76,9 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
       });
       this.router.navigate(['/dashboard']);
     }
+    this.speech.onCommand().subscribe(command => {
+      this.handleSpeechCommand(command);
+    });
   }
 
   ngAfterViewInit(): void {
@@ -133,4 +138,13 @@ export class RoomDashboardComponent implements OnInit, AfterViewInit {
       state: { houseId: this.houseId }
     });
   }
+
+  handleSpeechCommand(command: string): void {
+    const lower = command.toLowerCase().trim();
+
+    if (lower === 'go back to house' || lower === 'back to house') {
+      this.goBackToHouseDashboard();
+    }
+  }
+
 }

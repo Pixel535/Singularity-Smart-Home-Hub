@@ -63,6 +63,10 @@ export class HeaderComponent implements OnInit, OnChanges, OnDestroy {
       if (command === 'logout' || command === 'log out') {
         this.logout();
       }
+      
+      if (command === 'go home' || command === 'home') {
+        this.goHome();
+      }
     });
   }
 
