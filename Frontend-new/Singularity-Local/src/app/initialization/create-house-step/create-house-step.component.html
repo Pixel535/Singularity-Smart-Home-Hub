@@ -1,0 +1,67 @@
+<div class="create-house-container">
+  <form [formGroup]="form" (ngSubmit)="continue()" class="form-card">
+    <div class="form-header">
+      <p class="subtitle">Create New House</p>
+    </div>
+    <div class="field">
+      <label for="HouseName">House Name</label>
+      <input id="HouseName" type="text" pInputText formControlName="HouseName" [class.invalid]="isInvalid('HouseName')" />
+      <small *ngIf="isInvalid('HouseName')" class="error-message">House Name is required.</small>
+    </div>
+
+    <div class="field">
+      <label for="Country">Country</label>
+      <p-dropdown
+        inputId="Country"
+        [options]="countries"
+        optionLabel="name"
+        formControlName="Country"
+        class="country-dropdown"
+        [filter]="true"
+        placeholder="Select a country"
+        [showClear]="true"
+        [virtualScroll]="true"
+        [itemSize]="35"
+        [autoDisplayFirst]="false"
+      >
+        <ng-template let-country pTemplate="item">
+          <div class="country-option">
+            <img
+              [src]="'https://flagcdn.com/w40/' + country.code.toLowerCase() + '.png'"
+              class="flag"
+              alt="{{ country.name }}"
+            />
+            {{ country.name }}
+          </div>
+        </ng-template>
+      </p-dropdown>
+      <small *ngIf="isInvalid('Country')" class="error-message">Country is required.</small>
+    </div>
+
+    <div class="field">
+      <label for="City">City</label>
+      <input id="City" type="text" pInputText formControlName="City" [class.invalid]="isInvalid('City')" />
+      <small *ngIf="isInvalid('City')" class="error-message">City is required.</small>
+    </div>
+
+    <div class="field">
+      <label for="StreetAddress">Street Address</label>
+      <input id="StreetAddress" type="text" pInputText formControlName="StreetAddress" [class.invalid]="isInvalid('StreetAddress')" />
+      <small *ngIf="isInvalid('StreetAddress')" class="error-message">Street Address is required.</small>
+    </div>
+
+    <div class="field">
+      <label for="PostalCode">Postal Code</label>
+      <input id="PostalCode" type="text" pInputText formControlName="PostalCode" [class.invalid]="isInvalid('PostalCode')" />
+      <small *ngIf="isInvalid('PostalCode')" class="error-message">Postal Code is required.</small>
+    </div>
+
+    <button
+      pButton
+      type="submit"
+      label="Continue"
+      [disabled]="form.invalid"
+      class="form-button"
+    ></button>
+  </form>
+</div>

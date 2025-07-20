@@ -1,0 +1,79 @@
+@use '../../../shared/form-style.scss' as *;
+@use '../../../shared/variables.scss' as *;
+
+$select-house-max-width: clamp(320px, 95vw, 600px);
+
+.select-house-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $background-color;
+  padding: $layout-padding;
+  overflow-y: auto;
+}
+
+.form-card {
+  width: 100%;
+  max-width: $select-house-max-width;
+  padding: $form-padding;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-md;
+  background-color: $card-color;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+}
+
+.scroll-panel {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-sm;
+  max-height: 50vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-inline: $gap-sm;
+}
+
+
+.house-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 2px solid transparent;
+  border-radius: $radius-md;
+
+  &:hover {
+    transform: scale(1.01);
+  }
+
+  &.selected {
+    border-color: $secondary-color;
+    box-shadow: 0 0 0 2px $secondary-color;
+  }
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    font-size: $button-font-size;
+    padding: $button-padding;
+  }
+}
+
+.form-error {
+  color: $error-color;
+  font-size: $responsive-error;
+  margin-top: $gap-xs;
+  text-align: center;
+}
+
+.fullscreen-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: $text-color;
+  background: $background-color;
+}

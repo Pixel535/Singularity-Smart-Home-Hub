@@ -1,0 +1,75 @@
+// === Colors ===
+$background-color: #0f0f0f;
+$primary-color: #18181b;
+$secondary-color: #6f00ff;
+$hover-secondary-color: #5a00d4;
+$third-color: #605e63;
+$hover-third-color: #565557;
+$shadow-color: #be8dff66;
+$text-color: #ffffff;
+$text-color-darker: #ccc;
+$text-color-darkest: #3a3a3a;
+$label-text-color: #ddd;
+$card-color: #2a2a2a;
+$input-border-color: #444;
+$error-color: #e53935;
+$text-color-muted: #999999;
+
+// === Fonts ===
+$font-xs: 0.75rem;
+$font-sm: 0.875rem;
+$font-md: 1rem;
+$font-lg: 1.25rem;
+$font-xl: 1.5rem;
+$font-xxl: 2rem;
+
+// === SPACING ===
+$gap-xs: 0.25rem;
+$gap-sm: 0.5rem;
+$gap-md: 1rem;
+$gap-lg: 2rem;
+$gap-xl: 3rem;
+
+// === RADIUS ===
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 16px;
+$radius-pill: 999px;
+
+// === SHADOWS ===
+$shadow-sm: 0 0 4px #be8dff66;
+$shadow-md: 0 0 12px #be8dff66;
+$shadow-lg: 0 0 24px #be8dff66;
+
+// === SCALABLE UI ELEMENTS ===
+$pin-button-size: clamp(3rem, 9vw, 4.5rem);
+$pin-dot-size: clamp(0.8rem, 1.8vw, 1.2rem);
+$form-max-width: clamp(280px, 90vw, 420px);
+$form-padding: clamp(1rem, 5vw, 2rem);
+$image-size: clamp(120px, 30vw, 220px);
+
+// === RESPONSIVE TYPOGRAPHY ===
+$responsive-title: clamp(1.5rem, 4vw, 2rem);
+$responsive-subtitle: clamp(1rem, 2.5vw, 1.25rem);
+$responsive-label: clamp(0.9rem, 2vw, 1rem);
+$responsive-keypad: clamp(1rem, 2.5vw, 1.5rem);
+$responsive-error: clamp(0.75rem, 1.8vw, 0.875rem);
+
+// === BREAKPOINTS (optional) ===
+$breakpoint-sm: 600px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+
+// === LAYOUT WRAPPERS ===
+$layout-padding: clamp(1rem, 5vw, 2.5rem);
+$layout-gap: clamp(1rem, 3vw, 2rem);
+$layout-max-width: 1200px;
+
+// === INPUTS ===
+$input-height: clamp(2.75rem, 6vw, 3.5rem);
+$input-radius: $radius-sm;
+
+// === BUTTONS ===
+$button-font-size: $responsive-keypad;
+$button-padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem);

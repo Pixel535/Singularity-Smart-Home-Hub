@@ -1,0 +1,87 @@
+@use '../../shared/variables.scss' as *;
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+  display: none !important;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  overflow: visible !important;
+  padding-top: 3.5rem !important;
+  padding-bottom: 2rem !important;
+  background-color: $card-color !important;
+  border-radius: 1rem;
+  position: relative;
+}
+
+:host ::ng-deep .headless-wrapper {
+  text-align: center;
+  padding: 0 $gap-md;
+  border-radius: $radius-lg;
+  position: relative;
+  color: $text-color;
+}
+
+:host ::ng-deep .icon-circle {
+  background-color: $secondary-color;
+  color: white;
+  border-radius: 50%;
+  width: 6rem;
+  height: 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-sm !important;
+  position: absolute;
+  top: -7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 $gap-sm rgba(0, 0, 0, 0.2);
+  z-index: 10;
+
+  i {
+    font-size: $font-xl !important;
+  }
+}
+
+:host ::ng-deep .dialog-title {
+  font-size: $font-lg;
+  font-weight: 600;
+  margin-top: $gap-xs;
+  margin-bottom: $gap-xs;
+}
+
+:host ::ng-deep .dialog-text {
+  font-size: $font-md;
+  margin-bottom: $gap-md;
+}
+
+:host ::ng-deep .dialog-actions {
+  display: flex;
+  justify-content: center;
+  gap: $gap-sm;
+}
+
+:host ::ng-deep .btn-confirm {
+  background-color: $secondary-color !important;
+  color: $text-color !important;
+  border: none !important;
+  font-weight: 600;
+  border-radius: $radius-sm !important;
+  padding: $gap-sm $gap-md;
+
+  &:hover {
+    background-color: $hover-secondary-color !important;
+  }
+}
+
+:host ::ng-deep .btn-cancel {
+  border: 1px solid #aaa !important;
+  color: $text-color !important;
+  background-color: transparent !important;
+  border-radius: $radius-sm !important;
+  padding: $gap-sm $gap-md;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+  }
+}

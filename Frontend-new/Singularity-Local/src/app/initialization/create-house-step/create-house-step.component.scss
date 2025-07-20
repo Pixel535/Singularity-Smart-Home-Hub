@@ -1,0 +1,58 @@
+@use '../../../shared/form-style.scss' as *;
+@use '../../../shared/variables.scss' as *;
+
+.create-house-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $background-color;
+  padding: $layout-padding;
+  overflow-y: auto;
+}
+
+.form-card {
+  width: 100%;
+  max-width: $form-max-width;
+  padding: $form-padding;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-xs;
+  background-color: $card-color;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+}
+
+.country-dropdown {
+  width: 100%;
+
+  .p-dropdown-panel {
+    max-height: 300px;
+  }
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+
+  .flag {
+    width: 20px;
+    margin-right: 0.5rem;
+    border-radius: 3px;
+  }
+}
+
+:host ::ng-deep .p-dropdown.p-focus,
+:host ::ng-deep .p-inputtext:enabled:focus {
+  border-color: $secondary-color !important;
+}
+
+:host ::ng-deep .p-select-option.p-select-option-selected {
+  background-color: color-mix(in srgb, $secondary-color, transparent 50%) !important;
+  color: #fff !important;
+}
+
+:host ::ng-deep .p-select-option:hover {
+  background-color: color-mix(in srgb, $secondary-color, white 10%) !important;
+  color: white !important;
+}

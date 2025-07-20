@@ -1,0 +1,48 @@
+@use '../../shared/variables.scss' as *;
+
+:host ::ng-deep .header.p-menubar,
+:host ::ng-deep .p-menubar-root,
+:host ::ng-deep .p-menubar {
+  background-color: $secondary-color !important;
+  border: none !important;
+  box-shadow: 0 0 24px $shadow-color;
+}
+
+:host ::ng-deep .p-menubar-start,
+:host ::ng-deep .p-menubar-end {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  cursor: pointer;
+
+  .image {
+    height: 60px;
+    margin-left: $gap-sm;
+  }
+}
+
+.welcome-text {
+  font-size: $font-md;
+  font-weight: 600;
+  color: white;
+  margin-right: $gap-md;
+}
+
+.logout-btn {
+  background-color: white;
+  color: $secondary-color;
+  font-weight: 600;
+  border: none;
+  border-radius: $radius-sm;
+  padding: $gap-xs $gap-md;
+  font-size: $font-sm;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: $hover-secondary-color;
+    color: white;
+  }
+}

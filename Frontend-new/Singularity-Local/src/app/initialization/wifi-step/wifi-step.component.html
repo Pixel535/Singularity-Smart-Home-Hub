@@ -1,0 +1,51 @@
+<p-toast position="top-center"></p-toast>
+
+<div *ngIf="loading" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
+
+<div class="wifi-step-container">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card">
+    <div class="form-header">
+      <p class="subtitle">Select WiFi network</p>
+    </div>
+
+    <div class="field">
+      <label for="ssid">Network</label>
+      <p-dropdown 
+        class="wifi-dropdown"
+        inputId="ssid"
+        formControlName="ssid"
+        [options]="networks"
+        [placeholder]="'Select network'"
+        [autoDisplayFirst]="false"
+        [filter]="true"
+      ></p-dropdown>
+    </div>
+
+    <div class="field password-field">
+      <label for="password">Password</label>
+      <div class="input-icon-wrapper">
+        <input
+          id="password"
+          pInputText
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+        />
+        <i
+          class="pi"
+          [ngClass]="showPassword ? 'pi-eye' : 'pi-eye-slash'"
+          (click)="showPassword = !showPassword"
+        ></i>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button pButton type="submit" label="Connect" [disabled]="loading" class="form-button"></button>
+      <button pButton type="button" class="form-button-secondary" label="Continue offline" (click)="continueOffline()"></button>
+    </div>
+
+    <p *ngIf="submitted && form.controls['ssid'].invalid" class="form-error">Network is required.</p>
+    <p *ngIf="errorMessage" class="form-error">{{ errorMessage }}</p>
+  </form>
+</div>

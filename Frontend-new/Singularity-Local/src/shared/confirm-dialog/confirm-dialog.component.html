@@ -1,0 +1,22 @@
+<p-dialog
+  #customDialog
+  [visible]="visible"
+  [modal]="true"
+  [closable]="false"
+  [closeOnEscape]="true"
+  [style]="{ width: '400px' }"
+  [baseZIndex]="1100"
+  (click)="handleClickOutside($event)"
+>
+  <div class="headless-wrapper">
+    <div class="icon-circle">
+      <i class="pi pi-question"></i>
+    </div>
+    <span class="dialog-title">{{ header }}</span>
+    <p class="dialog-text">{{ message }}</p>
+    <div class="dialog-actions">
+      <button pButton label="Delete" (click)="onAccept()" class="btn-confirm w-32"></button>
+      <button pButton label="Cancel" (click)="onReject()" class="btn-cancel w-32 p-button-outlined"></button>
+    </div>
+  </div>
+</p-dialog>

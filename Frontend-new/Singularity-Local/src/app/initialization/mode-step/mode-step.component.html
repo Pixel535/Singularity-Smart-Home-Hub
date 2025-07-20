@@ -1,0 +1,20 @@
+<div *ngIf="loading" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
+
+<div class="mode-step-container">
+  <div class="form-card">
+    <div class="form-header">
+      <p class="subtitle">Select setup mode</p>
+    </div>
+
+    <div class="mode-options">
+      <button pButton label="Create house (offline)" class="form-button" (click)="select('local')"></button>
+
+      <ng-container *ngIf="isOnline">
+        <button pButton label="Create house (with account)" class="form-button" (click)="select('new')"></button>
+        <button pButton label="Join existing house" class="form-button" (click)="select('join')"></button>
+      </ng-container>
+    </div>
+  </div>
+</div>

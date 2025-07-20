@@ -1,0 +1,10 @@
+@use '../../shared/variables.scss' as *;
+
+.initialization-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: $background-color;
+  padding: $form-padding;
+}

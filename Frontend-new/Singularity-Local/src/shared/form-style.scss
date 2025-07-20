@@ -1,0 +1,160 @@
+@use './variables.scss' as v;
+
+// === FORM CARD ===
+.form-card {
+  width: 100%;
+  max-width: v.$form-max-width;
+  padding: v.$form-padding;
+  background-color: v.$primary-color !important;
+  border: 2px solid v.$secondary-color;
+  border-radius: v.$radius-lg;
+  box-shadow: 0 0 24px v.$shadow-color;
+
+  .form-header {
+    text-align: center;
+    margin-bottom: v.$gap-lg;
+
+    .image {
+      width: v.$image-size;
+      margin-bottom: v.$gap-md;
+    }
+
+    h2 {
+      color: v.$text-color;
+      font-size: v.$responsive-title;
+      margin: 0;
+    }
+
+    .subtitle {
+      color: v.$text-color-darker;
+      font-size: v.$responsive-subtitle;
+    }
+  }
+
+  .field {
+    margin-bottom: v.$gap-lg;
+
+    label {
+      display: block;
+      margin-bottom: v.$gap-sm;
+      color: v.$label-text-color;
+      font-weight: 500;
+      font-size: v.$responsive-label;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: v.$gap-sm v.$gap-md;
+      border-radius: v.$radius-sm;
+      background-color: v.$card-color;
+      border: 1px solid v.$input-border-color;
+      color: v.$text-color-darker;
+      font-size: v.$font-md;
+
+      &:focus {
+        outline: none;
+        border-color: v.$secondary-color;
+      }
+    }
+  }
+
+  .form-button {
+    width: 100%;
+    background-color: v.$secondary-color;
+    color: v.$text-color;
+    font-size: v.$responsive-label;
+    font-weight: 600;
+    border: none;
+    padding: v.$gap-sm v.$gap-md;
+    border-radius: v.$radius-sm;
+
+    &:hover {
+      background-color: v.$hover-secondary-color;
+    }
+
+    .custom-spinner {
+      margin-left: v.$gap-sm;
+      font-size: v.$responsive-label;
+      color: #fff;
+    }
+  }
+
+  .form-button-secondary {
+    width: 100%;
+    background-color: v.$third-color;
+    color: v.$text-color;
+    font-size: v.$responsive-label;
+    font-weight: 600;
+    border: none;
+    padding: v.$gap-sm v.$gap-md;
+    border-radius: v.$radius-sm;
+
+    &:hover {
+      background-color: v.$hover-third-color;
+    }
+
+    .custom-spinner {
+      margin-left: v.$gap-sm;
+      font-size: v.$responsive-label;
+      color: #fff;
+    }
+  }
+
+  .form-footer {
+    margin-top: v.$gap-md;
+    text-align: center;
+    font-size: v.$responsive-error;
+    color: v.$text-color-darker;
+
+    a {
+      margin-left: 0.3rem;
+      color: v.$secondary-color;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// === FIELD ERROR ===
+.field input.invalid {
+  border-color: v.$error-color !important;
+}
+
+.error-message {
+  color: v.$error-color;
+  font-size: v.$responsive-error;
+  margin-top: v.$gap-xs;
+  display: block;
+}
+
+// === PASSWORD FIELD ===
+.password-field {
+  .input-icon-wrapper {
+    position: relative;
+
+    input {
+      padding-right: 2.5rem;
+    }
+
+    i {
+      position: absolute;
+      top: 50%;
+      right: v.$gap-md;
+      transform: translateY(-50%);
+      color: #aaa;
+      font-size: v.$responsive-label;
+      cursor: pointer;
+
+      &:hover {
+        color: v.$text-color;
+      }
+    }
+  }
+}

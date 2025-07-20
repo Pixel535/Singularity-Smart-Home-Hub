@@ -1,0 +1,83 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="mqtt-step-container">
+  <div class="form-card">
+    <div class="form-header">
+      <p class="subtitle">Enter MQTT credentials to connect to your local broker</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          placeholder="MQTT Username"
+          pInputText
+          formControlName="username"
+          [class.invalid]="form.get('username')?.invalid && submitted"
+        />
+        <small *ngIf="form.get('username')?.invalid && submitted" class="error-message">
+          Username is required.
+        </small>
+      </div>
+
+      <div class="field password-field">
+        <label for="password">Password</label>
+        <div class="input-icon-wrapper">
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Password"
+            pInputText
+            formControlName="password"
+            [class.invalid]="form.get('password')?.invalid && submitted"
+          />
+          <i
+            class="pi"
+            [ngClass]="showPassword ? 'pi-eye' : 'pi-eye-slash'"
+            (click)="showPassword = !showPassword"
+          ></i>
+        </div>
+        <small *ngIf="form.get('password')?.invalid && submitted" class="error-message">
+          Password is required.
+        </small>
+      </div>
+
+      <div class="field password-field">
+        <label for="repeatPassword">Repeat Password</label>
+        <div class="input-icon-wrapper">
+          <input
+            id="repeatPassword"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Repeat Password"
+            pInputText
+            formControlName="repeatPassword"
+            [class.invalid]="form.get('repeatPassword')?.invalid && submitted"
+          />
+          <i
+            class="pi"
+            [ngClass]="showPassword ? 'pi-eye' : 'pi-eye-slash'"
+            (click)="showPassword = !showPassword"
+          ></i>
+        </div>
+        <small *ngIf="form.get('repeatPassword')?.invalid && submitted" class="error-message">
+          Repeated password is required.
+        </small>
+        <small *ngIf="form.get('repeatPassword')?.hasError('mismatch')" class="error-message">
+          Passwords do not match.
+        </small>
+      </div>
+
+      <button
+        pButton
+        type="submit"
+        class="form-button"
+        [disabled]="form.invalid"
+      >
+        <span class="p-button-label">Continue</span>
+        <i *ngIf="loading" class="pi pi-spinner pi-spin custom-spinner"></i>
+      </button>
+    </form>
+  </div>
+</div>

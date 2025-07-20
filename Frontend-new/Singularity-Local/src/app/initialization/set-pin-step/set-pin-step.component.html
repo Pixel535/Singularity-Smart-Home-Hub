@@ -1,0 +1,58 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="set-pin-container">
+  <p-card class="form-card">
+    <div class="form-header">
+      <img src="assets/images/logo1_white.png" alt="Logo" class="image" />
+      <p class="subtitle">
+        {{ stage === 'pin' ? 'Set your PIN' : 'Confirm your PIN' }}
+      </p>
+    </div>
+
+    <div class="pin-field">
+      <div class="pin-bullets">
+        <ng-container *ngFor="let i of [0,1,2,3,4,5]; let idx = index">
+          <span class="pin-dot" [class.filled]="idx < (stage === 'pin' ? pin.length : confirmPin.length)"></span>
+        </ng-container>
+      </div>
+
+      <div class="pin-keypad">
+        <ng-container *ngFor="let row of [['1','2','3'], ['4','5','6'], ['7','8','9']]">
+          <div class="keypad-row">
+            <button type="button" *ngFor="let d of row" (click)="handleDigitClick(d)">
+              {{ d }}
+            </button>
+          </div>
+        </ng-container>
+
+        <div class="keypad-row">
+          <div class="spacer"></div>
+          <button type="button" (click)="handleDigitClick('0')">0</button>
+          <button type="button" (click)="handleBackspace()">⌫</button>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button
+          *ngIf="stage === 'pin'"
+          pButton
+          label="Continue"
+          class="form-button"
+          (click)="goToConfirm()"
+          [disabled]="pin.length !== 6"
+        ></button>
+
+        <button
+          *ngIf="stage === 'confirm'"
+          pButton
+          label="Confirm PIN"
+          class="form-button"
+          (click)="submit()"
+          [disabled]="confirmPin.length !== 6"
+        ></button>
+      </div>
+
+      <small *ngIf="error" class="form-error">{{ error }}</small>
+    </div>
+  </p-card>
+</div>

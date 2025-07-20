@@ -1,0 +1,46 @@
+<div class="initialize-wrapper">
+  <ng-container *ngIf="!isChecking" [ngSwitch]="step">
+
+    <!-- Krok 1: WiFi -->
+    <app-wifi-step
+      *ngSwitchCase="'wifi'"
+      (connected)="goToNextStep()"
+      (checkedOffline)="handleOfflineCheck($event)"
+    />
+
+    <!-- Krok 2: Tryb -->
+    <app-mode-step
+      *ngSwitchCase="'mode'"
+      (modeSelected)="onModeSelected($event)"
+    />
+
+    <!-- Krok 3: Login do konta -->
+    <app-login-step
+      *ngSwitchCase="'login'"
+      (loggedIn)="onUserLoggedIn()"
+    />
+
+    <!-- Krok 4: Wybór domu -->
+    <app-select-house-step
+      *ngSwitchCase="'selectHouse'"
+      (completed)="redirectToLoginHouse()"
+    />
+
+    <!-- Krok 5: Tworzenie domu -->
+    <app-create-house-step
+      *ngSwitchCase="'createHouse'"
+      (completed)="onHouseCreated($event)"
+    ></app-create-house-step>
+    
+    <app-set-pin-step
+      *ngSwitchCase="'setPin'"
+      (completed)="onPinSet($event)"
+    ></app-set-pin-step>
+
+    <app-mqtt-step 
+    *ngSwitchCase="'mqtt'" 
+    (completed)="onMqttContinue($event)" 
+    ></app-mqtt-step>
+
+  </ng-container>
+</div>

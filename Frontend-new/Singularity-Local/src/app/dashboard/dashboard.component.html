@@ -1,0 +1,145 @@
+<p-toast position="top-center"></p-toast>
+
+<app-confirm-dialog
+  [visible]="showDeleteConfirm"
+  [header]="'Delete Room'"
+  [message]="'Are you sure you want to delete room: ' + selectedRoomToDelete?.RoomName + '?'"
+  (accept)="acceptDeleteRoom()"
+  (reject)="cancelDeleteRoom()"
+  (closed)="cancelDeleteRoom()"
+/>
+
+<app-header
+  *ngIf="!loading"
+  [houseName]="houseName"
+  [houseId]="houseId"
+/>
+
+<div *ngIf="loading" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
+
+<div class="house-dashboard" *ngIf="!loading">
+  <div class="tab-wrapper">
+    <div class="tabs">
+      <div
+        #tabItem
+        class="tab"
+        [class.active]="activeTab === 'rooms'"
+        (click)="setTab('rooms')"
+      >
+        Rooms
+      </div>
+      <div
+        #tabItem
+        class="tab"
+        [class.active]="activeTab === 'devices'"
+        (click)="setTab('devices')"
+      >
+        Devices
+      </div>
+      <div
+        #tabItem
+        class="tab"
+        [class.active]="activeTab === 'functions'"
+        (click)="setTab('functions')"
+      >
+        Functions
+      </div>
+
+      <div
+        class="tab-slider"
+        [ngStyle]="{
+          left: tabIndicatorStyle.left,
+          width: tabIndicatorStyle.width
+        }"
+      ></div>
+    </div>
+  </div>
+
+  <div class="tab-content">
+    <div *ngIf="activeTab === 'rooms'">
+      <div *ngIf="rooms.length === 0" class="empty-state">
+        <p>You haven't added any room yet!</p>
+      </div>
+
+      <div class="rooms-list">
+        <div
+          class="room-card"
+          *ngFor="let room of rooms"
+          (click)="goToRoom(room.RoomID)"
+          style="cursor: pointer;"
+        >
+          <button
+            class="delete-button"
+            (click)="confirmDeleteRoom(room); $event.stopPropagation()"
+            pButton
+            icon="pi pi-times"
+            tooltip="Delete room"
+            tooltipPosition="left"
+          ></button>
+
+          <button
+            class="edit-button"
+            (click)="toggleEditForm(room); $event.stopPropagation()"
+            pButton
+            icon="pi pi-pencil"
+            tooltip="Edit room"
+            tooltipPosition="left"
+          ></button>
+
+          <div class="room-info">
+            <h4>{{ room.RoomName }}</h4>
+            <p class="muted">Room ID: {{ room.RoomID }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay" *ngIf="showAddForm" (click)="closeForm($event)">
+        <div class="form-card" (click)="$event.stopPropagation()">
+          <button class="close-button pi pi-times" (click)="toggleAddForm()"></button>
+
+          <div class="form-header">
+            <p class="subtitle">{{ isEditing ? 'Edit room' : 'Add new room' }}</p>
+          </div>
+
+          <form [formGroup]="addRoomForm" (ngSubmit)="submitAddRoom()">
+            <div class="field">
+              <label for="RoomName">Room Name</label>
+              <input
+                id="RoomName"
+                type="text"
+                pInputText
+                formControlName="RoomName"
+                [class.invalid]="isInvalid('RoomName')"
+              />
+              <small *ngIf="isInvalid('RoomName')" class="error-message">
+                Room name is required.
+              </small>
+            </div>
+
+            <button
+              pButton
+              type="submit"
+              class="form-button"
+              [label]="isEditing ? 'Save' : 'Add Room'"
+              [disabled]="addRoomForm.invalid"
+            ></button>
+          </form>
+        </div>
+      </div>
+
+      <div class="add-room-btn-container">
+        <button pButton label="Add Room" icon="pi pi-plus" (click)="toggleAddForm()"></button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'devices'">
+      <p class="coming-soon">Functionality coming soon...</p>
+    </div>
+
+    <div *ngIf="activeTab === 'functions'">
+      <p class="coming-soon">Functionality coming soon...</p>
+    </div>
+  </div>
+</div>

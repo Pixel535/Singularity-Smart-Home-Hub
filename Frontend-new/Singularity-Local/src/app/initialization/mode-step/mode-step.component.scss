@@ -1,0 +1,46 @@
+@use '../../../shared/variables.scss' as *;
+@use '../../../shared/form-style.scss' as *;
+
+.mode-step-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $background-color;
+  padding: $layout-padding;
+}
+
+.form-card {
+  width: 100%;
+  max-width: $form-max-width;
+  padding: $form-padding;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-md;
+  background-color: $card-color;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+}
+
+.form-header {
+  .subtitle {
+    font-size: $responsive-subtitle;
+    font-weight: 600;
+    color: $text-color;
+  }
+}
+
+.mode-options {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-md;
+}
+
+.fullscreen-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: $text-color;
+  background: $background-color;
+}

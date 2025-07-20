@@ -1,0 +1,109 @@
+@use '../../shared/variables.scss' as v;
+
+.room-dashboard {
+  padding: 2rem;
+
+  .tab-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .tabs {
+    position: relative;
+    background: #1a1a2b;
+    border-radius: 999px;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .tab {
+    padding: 0.75rem 2rem;
+    border-radius: 999px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+
+    &.active {
+      color: #fff;
+    }
+  }
+
+  .tab-slider {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    background-color: v.$secondary-color;
+    border-radius: 999px;
+    z-index: 1;
+    transition: all 0.3s ease;
+  }
+
+  .tab-content {
+    padding: 2rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: v.$text-color-darker;
+
+    p {
+      font-size: 1.4rem;
+      margin-bottom: 2rem;
+    }
+  }
+
+  .coming-soon {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    margin-top: 4rem;
+  }
+}
+
+.fullscreen-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: v.$background-color;
+  color: v.$text-color;
+}
+
+.dashboard-header {
+    position: relative;
+    margin-bottom: 2rem;
+    height: 3rem;
+  
+    .back-arrow {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.8rem;
+      color: #ccc;
+      cursor: pointer;
+      margin-left: 1rem;
+      transition: color 0.2s ease;
+  
+      &:hover {
+        color: v.$secondary-color;
+      }
+    }
+  
+    .title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: v.$text-color;
+      margin: 0;
+      line-height: 3rem;
+    }
+  }
+  

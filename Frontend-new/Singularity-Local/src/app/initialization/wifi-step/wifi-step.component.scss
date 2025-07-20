@@ -1,0 +1,57 @@
+@use '../../../shared/variables.scss' as *;
+@use '../../../shared/form-style.scss' as *;
+
+.wifi-step-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $background-color;
+  padding: $layout-padding;
+  overflow-y: auto;
+}
+
+.wifi-dropdown {
+  width: 100%;
+
+  .p-dropdown-panel {
+    max-height: 300px;
+  }
+}
+
+.button-row {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-sm;
+  margin-top: $gap-md;
+}
+
+.form-error {
+  color: $error-color;
+  font-size: $responsive-error;
+  margin-top: $gap-xs;
+}
+
+:host ::ng-deep .p-dropdown.p-focus,
+:host ::ng-deep .p-inputtext:enabled:focus {
+  border-color: $secondary-color !important;
+}
+
+:host ::ng-deep .p-select-option.p-select-option-selected {
+  background-color: color-mix(in srgb, $secondary-color, transparent 50%) !important;
+  color: #fff !important;
+}
+
+:host ::ng-deep .p-select-option:hover {
+  background-color: color-mix(in srgb, $secondary-color, white 10%) !important;
+  color: white !important;
+}
+
+.fullscreen-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: $text-color;
+  background: $background-color;
+}

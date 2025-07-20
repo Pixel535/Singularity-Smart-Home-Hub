@@ -1,0 +1,14 @@
+<p-menubar class="header">
+  <ng-template pTemplate="start">
+    <div class="logo" (click)="goHome()">
+      <img src="/assets/images/logo2_white.png" alt="Logo" class="image" />
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="end">
+    <span class="welcome-text">
+      Welcome to {{ houseName || '...' }}!
+    </span>
+    <button class="logout-btn" (click)="logout()">Log out</button>
+  </ng-template>
+</p-menubar>

@@ -1,0 +1,120 @@
+@use '../../../shared/variables.scss' as *;
+@use '../../../shared/form-style.scss' as *;
+
+.set-pin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $background-color;
+  padding: $layout-padding;
+}
+
+.form-card {
+  width: 100%;
+  max-width: $form-max-width;
+  padding: $form-padding;
+  background-color: $card-color;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-md;
+  align-items: center;
+}
+
+.form-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $gap-sm;
+
+  .image {
+    width: $image-size;
+    height: auto;
+  }
+
+  .subtitle {
+    font-size: $responsive-subtitle;
+    color: $text-color;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
+.pin-field {
+  margin-bottom: $gap-lg;
+}
+
+.pin-bullets {
+  display: flex;
+  justify-content: center;
+  gap: $gap-md;
+  margin-bottom: $gap-lg;
+}
+
+.pin-dot {
+  width: $pin-dot-size;
+  height: $pin-dot-size;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.3s;
+
+  &.filled {
+    background-color: $secondary-color;
+    border-color: $secondary-color;
+  }
+}
+
+.pin-keypad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $gap-md;
+
+  .keypad-row {
+    display: flex;
+    gap: $gap-md;
+
+    button {
+      width: $pin-button-size;
+      height: $pin-button-size;
+      font-size: $responsive-keypad;
+      font-weight: bold;
+      background-color: #40405f;
+      color: $text-color;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: $hover-secondary-color;
+      }
+    }
+  }
+
+  .spacer {
+    width: $pin-button-size;
+  }
+}
+
+.button-row {
+  width: 100%;
+  max-width: 300px;
+  margin-top: $gap-md;
+
+  button {
+    width: 100%;
+    font-size: $button-font-size;
+    padding: $button-padding;
+  }
+}
+
+.form-error {
+  color: $error-color;
+  font-size: $responsive-error;
+  text-align: center;
+  margin-top: $gap-xs;
+}

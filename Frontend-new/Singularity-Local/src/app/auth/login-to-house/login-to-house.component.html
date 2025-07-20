@@ -1,0 +1,51 @@
+<p-toast position="top-center"></p-toast>
+
+
+
+<div class="login-container" *ngIf="!loading">
+  <p-card class="form-card">
+    <div class="form-header">
+      <img src="assets/images/logo1_white.png" alt="Logo" class="image" />
+      <p class="subtitle">Enter PIN to Access the House</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field pin-field">
+        <h3 class="pin-label">Enter 6-digit PIN</h3>
+
+        <div class="pin-bullets">
+          <ng-container *ngFor="let i of [0,1,2,3,4,5]; let idx = index">
+            <span class="pin-dot" [class.filled]="idx < pinValue.length"></span>
+          </ng-container>
+        </div>
+
+        <small *ngIf="isInvalid('PIN')" class="error-message">
+          <ng-container *ngIf="form.get('PIN')?.errors?.['required']">PIN is required.</ng-container>
+          <ng-container *ngIf="form.get('PIN')?.errors?.['pattern']">PIN must be exactly 6 digits.</ng-container>
+        </small>
+
+
+        <div class="pin-keypad">
+          <ng-container *ngFor="let row of [['1','2','3'], ['4','5','6'], ['7','8','9']]">
+            <div class="keypad-row">
+              <button type="button" *ngFor="let d of row" (click)="handleDigitClick(d)">
+                {{ d }}
+              </button>
+            </div>
+          </ng-container>
+
+          <div class="keypad-row">
+            <div class="spacer"></div>
+            <button type="button" (click)="handleDigitClick('0')">0</button>
+            <button type="button" (click)="handleBackspace()">⌫</button>
+          </div>
+        </div>
+      </div>
+
+      <button pButton type="submit" class="form-button" [disabled]="isLoading">
+        <span class="p-button-label">Login</span>
+        <i *ngIf="isLoading" class="pi pi-spinner pi-spin custom-spinner"></i>
+      </button>
+    </form>
+  </p-card>
+</div>

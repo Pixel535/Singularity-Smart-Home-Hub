@@ -1,0 +1,61 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="login-container">
+  <div class="form-card">
+    <div class="form-header">
+      <img src="assets/images/logo1_white.png" alt="Logo" class="image" />
+      <p class="subtitle">Sign in to your account</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label for="UserLogin">Login or Email</label>
+        <input
+          id="UserLogin"
+          type="text"
+          placeholder="Login or Email"
+          pInputText
+          formControlName="UserLogin"
+          [class.invalid]="form.get('UserLogin')?.invalid && submitted"
+        />
+        <small *ngIf="form.get('UserLogin')?.invalid && submitted" class="error-message">
+          Login is required.
+        </small>
+      </div>
+
+      <div class="field password-field">
+        <label for="Password">Password</label>
+        <div class="input-icon-wrapper">
+          <input
+            id="Password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Password"
+            pInputText
+            formControlName="Password"
+            [class.invalid]="form.get('Password')?.invalid && submitted"
+          />
+          <i
+            class="pi"
+            [ngClass]="showPassword ? 'pi-eye' : 'pi-eye-slash'"
+            (click)="showPassword = !showPassword"
+          ></i>
+        </div>
+        <small *ngIf="form.get('Password')?.invalid && submitted" class="error-message">
+          Password is required.
+        </small>
+      </div>
+
+      <button
+        pButton
+        type="submit"
+        class="form-button"
+        [disabled]="form.invalid || loading"
+      >
+        <span class="p-button-label">Sign In</span>
+        <i *ngIf="loading" class="pi pi-spinner pi-spin custom-spinner"></i>
+      </button>
+
+      <p *ngIf="errorMessage" class="form-error">{{ errorMessage }}</p>
+    </form>
+  </div>
+</div>

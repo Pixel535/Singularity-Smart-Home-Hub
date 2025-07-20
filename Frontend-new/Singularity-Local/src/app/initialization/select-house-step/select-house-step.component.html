@@ -1,0 +1,40 @@
+<p-toast position="top-center"></p-toast>
+
+<div *ngIf="loading" class="fullscreen-loader">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
+</div>
+
+<div class="select-house-container">
+  <div class="form-card">
+    <div class="form-header">
+      <p class="subtitle">Select a House</p>
+    </div>
+
+    <div class="scroll-panel">
+      <p-card
+        *ngFor="let house of houses"
+        [class.selected]="selectedHouseId === house.HouseID"
+        (click)="selectHouse(house.HouseID)"
+        class="house-card"
+      >
+        <ng-template pTemplate="title">{{ house.HouseName }}</ng-template>
+        <ng-template pTemplate="content">
+          <p>{{ house.StreetAddress }}, {{ house.City }}</p>
+          <p>{{ house.PostalCode }} {{ house.Country }}</p>
+        </ng-template>
+      </p-card>
+    </div>
+
+    <div class="button-row">
+      <button
+        pButton
+        label="Continue"
+        (click)="continue()"
+        [disabled]="!selectedHouseId || loading"
+        class="form-button"
+      ></button>
+    </div>
+
+    <p class="form-error" *ngIf="error">{{ error }}</p>
+  </div>
+</div>
