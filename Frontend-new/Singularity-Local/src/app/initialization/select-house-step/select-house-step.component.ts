@@ -24,6 +24,10 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./select-house-step.component.scss']
 })
 export class SelectHouseStepComponent implements OnInit {
+  @Output() completed = new EventEmitter<void>();
+  @Output() back = new EventEmitter<void>();
+  showBack = true;
+
   houses: any[] = [];
   selectedHouseId: string | null = null;
   loading = false;
@@ -33,8 +37,6 @@ export class SelectHouseStepComponent implements OnInit {
   private toast = inject(MessageService);
   private router = inject(Router);
   private baseInitUrl = `${environment.apiBaseUrl}/initialization`;
-
-  @Output() completed = new EventEmitter<void>();
 
   ngOnInit(): void {
     this.http.get<{ houses: any[] }>(`${this.baseInitUrl}/get-houses`).subscribe({
@@ -86,5 +88,9 @@ export class SelectHouseStepComponent implements OnInit {
         });
       }
     });
+  }
+
+  goBack() {
+    this.back.emit();
   }
 }

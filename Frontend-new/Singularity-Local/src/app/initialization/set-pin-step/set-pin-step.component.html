@@ -1,5 +1,9 @@
 <p-toast position="top-center"></p-toast>
 
+<div class="go-back" *ngIf="showBack && stage === 'pin'">
+  <i class="pi pi-arrow-left back-arrow" (click)="goBack()"></i>
+</div>
+
 <div class="set-pin-container">
   <p-card class="form-card">
     <div class="form-header">

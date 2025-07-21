@@ -1,7 +1,7 @@
 <div class="initialize-wrapper">
   <ng-container *ngIf="!isChecking" [ngSwitch]="step">
 
-    <!-- Krok 1: WiFi -->
+    <!-- Krok 1: WiFi (brak przycisku WSTECZ) -->
     <app-wifi-step
       *ngSwitchCase="'wifi'"
       (connected)="goToNextStep()"
@@ -12,34 +12,43 @@
     <app-mode-step
       *ngSwitchCase="'mode'"
       (modeSelected)="onModeSelected($event)"
+      (back)="handleBack()"
+      [showBackArrow]="stepHistory[stepHistory.length - 1] === 'wifi'"
     />
 
     <!-- Krok 3: Login do konta -->
     <app-login-step
       *ngSwitchCase="'login'"
       (loggedIn)="onUserLoggedIn()"
+      (back)="handleBack()"
     />
 
     <!-- Krok 4: Wybór domu -->
     <app-select-house-step
       *ngSwitchCase="'selectHouse'"
       (completed)="redirectToLoginHouse()"
+      (back)="handleBack()"
     />
 
     <!-- Krok 5: Tworzenie domu -->
     <app-create-house-step
       *ngSwitchCase="'createHouse'"
       (completed)="onHouseCreated($event)"
+      (back)="handleBack()"
     ></app-create-house-step>
     
+    <!-- Krok 6: Ustawienie PIN -->
     <app-set-pin-step
       *ngSwitchCase="'setPin'"
       (completed)="onPinSet($event)"
+      (back)="handleBack()"
     ></app-set-pin-step>
 
+    <!-- Krok 7: MQTT -->
     <app-mqtt-step 
-    *ngSwitchCase="'mqtt'" 
-    (completed)="onMqttContinue($event)" 
+      *ngSwitchCase="'mqtt'" 
+      (completed)="onMqttContinue($event)" 
+      (back)="handleBack()"
     ></app-mqtt-step>
 
   </ng-container>

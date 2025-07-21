@@ -22,6 +22,8 @@ import { MessageService } from 'primeng/api';
 })
 export class MqttStepComponent {
   @Output() completed = new EventEmitter<{ username: string; password: string }>();
+  @Output() back = new EventEmitter<void>();
+  showBack = true;
 
   form!: FormGroup;
   submitted = false;
@@ -57,5 +59,9 @@ export class MqttStepComponent {
     });
 
     this.loading = false;
+  }
+
+  goBack() {
+    this.back.emit();
   }
 }

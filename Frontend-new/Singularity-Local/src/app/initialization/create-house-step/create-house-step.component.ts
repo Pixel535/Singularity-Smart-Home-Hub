@@ -21,6 +21,8 @@ import { COUNTRIES } from '../../../shared/countries';
 })
 export class CreateHouseStepComponent implements OnInit {
   @Output() completed = new EventEmitter<any>();
+  @Output() back = new EventEmitter<void>();
+  showBack = true;
 
   countries = COUNTRIES;
   form!: FormGroup;
@@ -53,5 +55,9 @@ export class CreateHouseStepComponent implements OnInit {
       CountryCode: raw.Country?.code
     };
     this.completed.emit(data);
+  }
+
+  goBack() {
+    this.back.emit();
   }
 }

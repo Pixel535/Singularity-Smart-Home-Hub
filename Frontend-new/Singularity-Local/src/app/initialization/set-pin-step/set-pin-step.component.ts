@@ -15,6 +15,8 @@ import { MessageService } from 'primeng/api';
 })
 export class SetPinStepComponent {
   @Output() completed = new EventEmitter<{ pin: string }>();
+  @Output() back = new EventEmitter<void>();
+  showBack = true;
 
   stage: 'pin' | 'confirm' = 'pin';
   pin = '';
@@ -65,6 +67,10 @@ export class SetPinStepComponent {
     this.pin = '';
     this.confirmPin = '';
     this.stage = 'pin';
+  }
+
+  goBack() {
+    this.back.emit();
   }
 
   private showError(message: string) {

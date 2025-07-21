@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { HttpClient } from '@angular/common/http';
@@ -14,7 +14,9 @@ import { environment } from '../../../environments/environment';
 export class ModeStepComponent implements OnInit {
   private baseInitUrl = `${environment.apiBaseUrl}/connectivity`;
 
+  @Input() showBackArrow = false;
   @Output() modeSelected = new EventEmitter<'local' | 'new' | 'join'>();
+  @Output() back = new EventEmitter<void>();
 
   isOnline = false;
   loading = true;
@@ -39,5 +41,9 @@ export class ModeStepComponent implements OnInit {
     if (!this.loading) {
       this.modeSelected.emit(mode);
     }
+  }
+
+  goBack() {
+    this.back.emit();
   }
 }

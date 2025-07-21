@@ -4,7 +4,11 @@
   <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
 </div>
 
-<div class="select-house-container">
+<div class="go-back" *ngIf="showBack">
+  <i class="pi pi-arrow-left back-arrow" (click)="goBack()"></i>
+</div>
+
+<div class="select-house-container" *ngIf="!loading">
   <div class="form-card">
     <div class="form-header">
       <p class="subtitle">Select a House</p>

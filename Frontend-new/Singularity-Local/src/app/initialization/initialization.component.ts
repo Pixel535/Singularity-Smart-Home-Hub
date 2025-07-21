@@ -29,6 +29,8 @@ import { environment } from '../../environments/environment';
 })
 export class InitializationComponent {
   step: 'wifi' | 'mode' | 'login' | 'selectHouse' | 'createHouse' | 'setPin' | 'mqtt' = 'wifi';
+  stepHistory: typeof this.step[] = [];
+
   isChecking = false;
   createdHouseData: any;
   isHouseCreationOffline = false;
@@ -45,12 +47,22 @@ export class InitializationComponent {
 
     const currentIndex = order.indexOf(this.step);
     if (currentIndex !== -1 && currentIndex < order.length - 1) {
+      this.stepHistory.push(this.step);
       this.step = order[currentIndex + 1];
     }
   }
 
   goToStep(step: typeof this.step) {
+    if (this.step) {
+      this.stepHistory.push(this.step);
+    }
     this.step = step;
+  }
+
+  handleBack() {
+    if (this.stepHistory.length > 0) {
+      this.step = this.stepHistory.pop()!;
+    }
   }
 
   setChecking(value: boolean) {

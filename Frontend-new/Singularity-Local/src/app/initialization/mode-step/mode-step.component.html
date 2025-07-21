@@ -2,7 +2,11 @@
   <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
 </div>
 
-<div class="mode-step-container">
+<div class="go-back" *ngIf="!loading && showBackArrow">
+  <i class="pi pi-arrow-left back-arrow" (click)="goBack()"></i>
+</div>
+
+<div class="mode-step-container" *ngIf="!loading">
   <div class="form-card">
     <div class="form-header">
       <p class="subtitle">Select setup mode</p>

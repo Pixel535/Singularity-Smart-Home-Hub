@@ -77,3 +77,20 @@ $select-house-max-width: clamp(320px, 95vw, 600px);
   color: $text-color;
   background: $background-color;
 }
+
+.go-back {
+  padding-top: 2rem;
+  padding-left: 2rem;
+  position: absolute;
+}
+
+.back-arrow {
+  font-size: 1.8rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $secondary-color;
+  }
+}

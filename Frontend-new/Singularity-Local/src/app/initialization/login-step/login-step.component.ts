@@ -23,6 +23,8 @@ import { MessageService } from 'primeng/api';
 })
 export class LoginStepComponent {
   @Output() loggedIn = new EventEmitter<void>();
+  @Output() back = new EventEmitter<void>();
+  showBack = true;
 
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
@@ -70,5 +72,9 @@ export class LoginStepComponent {
         });
       }
     });
+  }
+
+  goBack() {
+    this.back.emit();
   }
 }
