@@ -64,6 +64,8 @@ def get_identity_context():
 
 def get_mqtt_credentials():
     config = load_config()
+    if not config:
+        return None, None
     mqtt_config = config.get("mqtt", {})
 
     username = mqtt_config.get("username")

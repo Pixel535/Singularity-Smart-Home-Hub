@@ -21,7 +21,7 @@ export const canActivateAuth: CanActivateFn = (
       return auth.getInitializeStatus().pipe(
         map((status) => {
           console.log(status);
-          if (status?.config_exists) {
+          if (status.config_exists) {
             router.navigateByUrl('/loginHouse');
           } else {
             router.navigateByUrl('/initialization');

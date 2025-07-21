@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WifiStepComponent } from '../initialization/wifi-step/wifi-step.component';
 import { ModeStepComponent } from '../initialization/mode-step/mode-step.component';
@@ -27,7 +27,7 @@ import { environment } from '../../environments/environment';
   templateUrl: './initialization.component.html',
   styleUrls: ['./initialization.component.scss']
 })
-export class InitializationComponent {
+export class InitializationComponent implements OnInit {
   step: 'wifi' | 'mode' | 'login' | 'selectHouse' | 'createHouse' | 'setPin' | 'mqtt' = 'wifi';
   stepHistory: typeof this.step[] = [];
 
@@ -39,6 +39,28 @@ export class InitializationComponent {
   private baseInitUrl = `${environment.apiBaseUrl}/initialization`;
 
   constructor(private router: Router, private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.isChecking = true;
+
+    this.http.get<{ config_exists: boolean, online: boolean }>(`${this.baseInitUrl}/status`)
+      .subscribe({
+        next: ({ config_exists, online }) => {
+          if (online && config_exists) {
+            this.router.navigate(['/loginHouse']);
+          } else if (online && !config_exists) {
+            this.step = 'mode';
+          } else {
+            this.step = 'wifi';
+          }
+          this.isChecking = false;
+        },
+        error: () => {
+          this.step = 'wifi';
+          this.isChecking = false;
+        }
+      });
+  }
 
   goToNextStep() {
     const order: typeof this.step[] = [

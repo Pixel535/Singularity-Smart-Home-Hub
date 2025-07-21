@@ -12,38 +12,15 @@ export class RedirectComponent implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  private baseConnectivity = `${environment.apiBaseUrl}/connectivity`;
   private baseInitialize = `${environment.apiBaseUrl}/initialization`;
 
   ngOnInit(): void {
-    this.http.get<{ online: boolean }>(`${this.baseConnectivity}/check`).subscribe({
-      next: (res) => {
-        if (res.online) {
-          this.http.get<{ config_exists: boolean }>(`${this.baseInitialize}/status`).subscribe({
-            next: (status) => {
-              if (status.config_exists) {
-                this.router.navigate(['/loginHouse']);
-              } else {
-                this.router.navigate(['/initialization']);
-              }
-            },
-            error: () => {
-              this.router.navigate(['/initialization']);
-            }
-          });
+    this.http.get<{ config_exists: boolean; online: boolean }>(`${this.baseInitialize}/status`).subscribe({
+      next: ({ config_exists, online }) => {
+        if (config_exists) {
+          this.router.navigate(['/loginHouse']);
         } else {
-          this.http.get<{ config_exists: boolean }>(`${this.baseInitialize}/status`).subscribe({
-            next: (status) => {
-              if (status.config_exists) {
-                this.router.navigate(['/loginHouse']);
-              } else {
-                this.router.navigate(['/initialization']);
-              }
-            },
-            error: () => {
-              this.router.navigate(['/initialization']);
-            }
-          });
+          this.router.navigate(['/initialization']);
         }
       },
       error: () => {

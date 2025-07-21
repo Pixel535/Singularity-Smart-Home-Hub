@@ -71,8 +71,8 @@ export class AuthService {
     );
   }
 
-  getInitializeStatus(): Observable<{ config_exists: boolean }> {
-    return this.http.get<{ config_exists: boolean }>(`${this.baseInitUrl}/status`, {
+  getInitializeStatus(): Observable<{ config_exists: boolean; online: boolean }> {
+    return this.http.get<{ config_exists: boolean; online: boolean }>(`${this.baseInitUrl}/status`, {
       withCredentials: true
     });
   }

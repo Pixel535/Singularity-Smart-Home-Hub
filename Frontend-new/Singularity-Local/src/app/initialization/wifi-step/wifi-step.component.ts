@@ -82,7 +82,7 @@ export class WifiStepComponent implements OnInit {
           detail: 'You are now connected to WiFi',
           life: 3000
         });
-        this.router.navigate(['/']); // wracamy do redirect logiki
+        this.router.navigate(['/']);
       },
       error: (err) => {
         this.errorMessage = 'Connection failed. Please check your password.';
